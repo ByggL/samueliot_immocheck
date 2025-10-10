@@ -10,6 +10,7 @@ import 'dart:convert';
 class Rapport extends Property {
   final EtatsRapport statutRapport;
   final String signature;
+  final DateTime creationDate;
 
   Rapport({
     required super.nom,
