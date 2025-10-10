@@ -18,6 +18,7 @@ class Rapport extends Property {
     required super.roomList,
     required super.propertyType,
     required super.propertyId,
+    required this.creationDate,
     required this.statutRapport,
     required this.signature,
   });
@@ -38,6 +39,7 @@ class Rapport extends Property {
     roomList: (json['roomList'] as List).map((r) => Room.fromJson(r)).toList(),
     propertyType: PropertyTypes.values[json['propertyType']],
     propertyId: json['propertyId'],
+    creationDate: json['creationDate'],
     statutRapport: EtatsRapport.values[json['statutRapport']],
     signature: json['signature'],
   );
