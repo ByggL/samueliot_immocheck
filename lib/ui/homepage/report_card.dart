@@ -5,6 +5,7 @@ class ReportCard extends StatelessWidget {
   final String type;
   final String date;
   final String address;
+  final String status;
   final VoidCallback? onDelete;
 
   const ReportCard({
@@ -13,11 +14,27 @@ class ReportCard extends StatelessWidget {
     required this.type,
     required this.date,
     required this.address,
+    required this.status,
     this.onDelete,
   });
 
+  (IconData, Color) _getStatusIcon(String status) {
+    switch (status) {
+      case 'Pending':
+        return (Icons.hourglass_empty, Colors.orangeAccent);
+      case 'In Progress':
+        return (Icons.autorenew, Colors.blueAccent);
+      case 'Finished':
+        return (Icons.check_circle, Colors.green);
+      default:
+        return (Icons.help_outline, Colors.grey);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final (icon, color) = _getStatusIcon(status);
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -31,17 +48,32 @@ class ReportCard extends StatelessWidget {
               name,
               style: Theme.of(
                 context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 6),
-            Text("Type: $type"),
+            Text("Type : $type"),
 
-            Text("Date: $date"),
+            Text("Date : $date"),
+
+            Text("Address : $address"),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Address: $address"),
+                Row(
+                  children: [
+                    Icon(icon, color: color, size: 20),
+                    const SizedBox(width: 6),
+                    Text(
+                      status,
+                      style: TextStyle(
+                        color: color,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
                 Spacer(),
                 IconButton(
                   icon: const Icon(Icons.delete),

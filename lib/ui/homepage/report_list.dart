@@ -7,12 +7,14 @@ class Report {
   final String type;
   final String date;
   final String address;
+  final String status;
 
   Report({
     required this.name,
     required this.type,
     required this.date,
     required this.address,
+    required this.status,
   });
 }
 
@@ -31,12 +33,14 @@ class _ReportListState extends State<ReportList> {
       type: "Maintenance Report",
       date: "2025-10-08",
       address: "1234 Elm Street, Los Angeles, CA",
+      status: "Finished",
     ),
     Report(
       name: "Emission Check",
       type: "Environmental Report",
       date: "2025-09-20",
       address: "456 Oak Avenue, San Francisco, CA",
+      status: "In Progress",
     ),
   ];
 
@@ -137,6 +141,7 @@ class _ReportListState extends State<ReportList> {
                           type: report.type,
                           date: report.date,
                           address: report.address,
+                          status: report.status,
                           onDelete: () => _removeReport(report),
                         );
                       },
@@ -153,6 +158,7 @@ class _ReportListState extends State<ReportList> {
               type: "Safety Report",
               date: DateTime.now().toString().split(' ')[0],
               address: "789 Pine Street, Seattle, WA",
+              status: "Pending",
             ),
           );
         },
