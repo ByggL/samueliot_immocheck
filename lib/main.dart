@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:samueliot_immocheck/ui/homepage/report_list.dart';
 import 'package:samueliot_immocheck/ui/homepage/room_page.dart';
 
 void main() {
@@ -16,9 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const RoomPage(roomId: 'zjhf'),
+      home: const ReportList(),
     );
   }
 }
-
-

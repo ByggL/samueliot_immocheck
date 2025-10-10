@@ -4,14 +4,54 @@ import 'package:samueliot_immocheck/data/enums.dart';
 import 'package:samueliot_immocheck/providers/element_provider.dart';
 import 'package:samueliot_immocheck/providers/piece_provider.dart';
 import 'package:samueliot_immocheck/providers/rapport_provider.dart';
+import 'package:samueliot_immocheck/ui/forms/build_room_form.dart';
 
-class ReportPage extends StatelessWidget {
+class ReportPage extends StatefulWidget {
   final Rapport rapport;
 
   const ReportPage({super.key, required this.rapport});
 
   @override
+  State<ReportPage> createState() => _ReportPageState();
+}
+
+class _ReportPageState extends State<ReportPage> {
+  void _openAddRoomForm(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder:
+          (context) => Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              left: 16,
+              right: 16,
+              top: 20,
+            ),
+            child: RoomCreationForm(
+              onSubmit: (room) {
+                addRoomToProperty(widget.rapport, room);
+                Navigator.pop(context);
+                setState(() {});
+              },
+            ),
+          ),
+    );
+  }
+
+  void addRoomToProperty(Rapport rapport, Room newRoom) {
+    setState(() {
+      rapport.roomList.add(newRoom);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final rapport = widget.rapport;
+
     return Scaffold(
       appBar: AppBar(title: Text("Rapport: ${rapport.nom}")),
 
@@ -76,7 +116,7 @@ class ReportPage extends StatelessWidget {
             // ➕ Add Room Button at bottom
             Center(
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () => _openAddRoomForm(context),
                 icon: const Icon(Icons.add),
                 label: const Text("Ajouter une pièce"),
                 style: ElevatedButton.styleFrom(
