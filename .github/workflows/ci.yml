@@ -1,0 +1,58 @@
+name: Build Flutter APK
+
+on:
+  push:
+    tags:
+      - 'v*'   # Runs when you push a tag like v1.0.0
+  workflow_dispatch:   # Also allow manual trigger from Actions tab
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout repository
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Install dependencies
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y unzip xz-utils git curl
+
+      # Download Flutter SDK manually
+      - name: Install Flutter 3.29.3
+        run: |
+          curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.29.3-stable.tar.xz -o flutter.tar.xz
+          tar -xf flutter.tar.xz
+          export PATH="$PWD/flutter/bin:$PATH"
+          echo "$PWD/flutter/bin" >> $GITHUB_PATH
+          flutter doctor
+
+      # Ensure Flutter is on the path
+      - name: Flutter doctor
+        run: flutter doctor -v
+
+      # Get dependencies
+      - name: Install Flutter packages
+        run: flutter pub get
+
+      # Build release APK
+      - name: Build APK
+        run: flutter build apk --release
+
+      # Upload artifact to GitHub Actions (optional for debugging)
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      # 6. Create GitHub Release and attach APK
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/app/outputs/flutter-apk/app-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            
