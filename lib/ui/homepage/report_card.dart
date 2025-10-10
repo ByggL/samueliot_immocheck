@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:samueliot_immocheck/data/enums.dart';
 import 'package:samueliot_immocheck/providers/rapport_provider.dart';
+import 'package:samueliot_immocheck/ui/report_page/report_page.dart';
 
 class ReportCard extends StatelessWidget {
   final Rapport report;
@@ -64,6 +65,19 @@ class ReportCard extends StatelessWidget {
                   ],
                 ),
                 Spacer(),
+                OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ReportPage(rapport: report),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.info_outline),
+                  label: const Text('Details'),
+                ),
+                const SizedBox(width: 10),
                 IconButton(
                   icon: const Icon(Icons.delete),
                   color: Colors.redAccent,
