@@ -40,6 +40,24 @@ class _ReportListState extends State<ReportList> {
     ),
   ];
 
+  final TextEditingController _searchController = TextEditingController();
+  String _searchField = 'name'; // current field used for filtering
+  String _searchQuery = '';
+
+  // Filtered list based on query and field
+  List<Report> get _filteredReports {
+    if (_searchQuery.isEmpty) return _reports;
+    return _reports.where((report) {
+      final fieldValue = switch (_searchField) {
+        'name' => report.name,
+        'type' => report.type,
+        'date' => report.date,
+        _ => report.name,
+      };
+      return fieldValue.toLowerCase().contains(_searchQuery.toLowerCase());
+    }).toList();
+  }
+
   void _addReport(Report report) {
     setState(() {
       _reports.add(report);
@@ -56,28 +74,76 @@ class _ReportListState extends State<ReportList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Reports')),
-      body:
-          _reports.isEmpty
-              ? const Center(
-                child: Text(
-                  "No reports available.",
-                  style: TextStyle(fontSize: 16),
+      body: Column(
+        children: [
+          // 🔍 Search bar + dropdown
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      labelText: 'Search',
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value;
+                      });
+                    },
+                  ),
                 ),
-              )
-              : ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                itemCount: _reports.length,
-                itemBuilder: (context, index) {
-                  final report = _reports[index];
-                  return ReportCard(
-                    name: report.name,
-                    type: report.type,
-                    date: report.date,
-                    address: report.address,
-                    onDelete: () => _removeReport(report),
-                  );
-                },
-              ),
+
+                const SizedBox(width: 12),
+                DropdownButton<String>(
+                  value: _searchField,
+                  onChanged: (value) {
+                    setState(() {
+                      _searchField = value!;
+                    });
+                  },
+                  items: const [
+                    DropdownMenuItem(value: 'name', child: Text('Name')),
+                    DropdownMenuItem(value: 'type', child: Text('Type')),
+                    DropdownMenuItem(value: 'date', child: Text('Date')),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // 📋 Report list
+          Expanded(
+            child:
+                _filteredReports.isEmpty
+                    ? const Center(
+                      child: Text(
+                        "No matching reports.",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    )
+                    : ListView.builder(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      itemCount: _filteredReports.length,
+                      itemBuilder: (context, index) {
+                        final report = _filteredReports[index];
+                        return ReportCard(
+                          name: report.name,
+                          type: report.type,
+                          date: report.date,
+                          address: report.address,
+                          onDelete: () => _removeReport(report),
+                        );
+                      },
+                    ),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           // PLACEHOLDER dummy report add button

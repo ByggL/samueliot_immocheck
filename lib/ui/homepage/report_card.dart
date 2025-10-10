@@ -24,34 +24,32 @@ class ReportCard extends StatelessWidget {
       elevation: 4,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Row(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Left section — details
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text("Type: $type"),
-                  Text("Date: $date"),
-                  Text("Address: $address"),
-                ],
-              ),
+            Text(
+              name,
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
 
-            // Right section — delete button
-            IconButton(
-              icon: const Icon(Icons.delete),
-              color: Colors.redAccent,
-              onPressed: onDelete,
-              tooltip: "Delete Report",
+            const SizedBox(height: 6),
+            Text("Type: $type"),
+
+            Text("Date: $date"),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Address: $address"),
+                Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  color: Colors.redAccent,
+                  onPressed: onDelete,
+                  tooltip: "Delete Report",
+                ),
+              ],
             ),
           ],
         ),
