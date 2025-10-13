@@ -5,8 +5,11 @@ import 'dart:io';
 import 'package:samueliot_immocheck/providers/element_provider.dart';
 import 'package:samueliot_immocheck/providers/property_provider.dart';
 import 'package:samueliot_immocheck/providers/piece_provider.dart';
+import 'package:samueliot_immocheck/providers/rapport_provider.dart';
 import 'package:samueliot_immocheck/ui/report_page/report_page.dart';
 import 'package:uuid/uuid.dart';
+import 'package:provider/provider.dart';
+
 
 class ElementInspectionFormPage extends StatefulWidget {
   final RoomElement? element;
@@ -34,6 +37,7 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
   EtatsElement _status = EtatsElement.ok;
   List<XFile> _images = [];
 
+
   Future<void> _pickImage(ImageSource source) async {
     if (_images.length >= 3) return;
     final ImagePicker picker = ImagePicker();
@@ -53,31 +57,19 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
   }
 
   void _submit(){
-    RoomProvider roomProvider = RoomProvider();
 
     
     if (_formKey.currentState?.validate() ?? false) {
       _formKey.currentState?.save();
 
-      setState(() {
-          // print(widget.roomToAddTo!.roomId);
-          // print(_comment);
-          // print(_elementName);
-          // print(_elementId);
-          // print(_images);
-          // print(_status);
+
         if (_elementId == ''){
           _elementId = Uuid().v4();
         }
         if (_comment ==''){
           _comment = 'RAS';
         }
-          // print(widget.roomToAddTo!.roomId);
-          // print(_comment);
-          // print(_elementName);
-          // print(_elementId);
-          // print(_images);
-          // print(_status);
+
         RoomElement elementToAdd =
           RoomElement(
             commentaire: _comment ,
@@ -87,9 +79,14 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
             elementName:_elementName,
             );
           
-        roomProvider.addElementToRoom(widget.roomToAddTo!.roomId, elementToAdd);    
 
-      });
+
+        context.read<RapportProvider>()
+        .addElementToRoom(
+          widget.roomToAddTo!.roomId,
+           elementToAdd);
+
+
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -97,6 +94,8 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
           duration: Duration(milliseconds: 500),
         ),
       );
+      Navigator.of(context).pop();
+
     }
 
     Navigator.of(context).pop();
@@ -106,6 +105,7 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
   @override
   void initState() {
     super.initState();
+
     if (widget.element != null) {
       _comment = widget.element!.commentaire;
       _status = widget.element!.statut;
@@ -139,7 +139,7 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
                     RoomElements.values.map((element) {
                       return DropdownMenuItem(
                         value: element,
-                        child: Text(element.toString().split('.').last),
+                        child: Text(roomElementString( element)),
                       );
                     }).toList(),
                 onChanged: (value) => setState(() => _elementName = value!),
@@ -154,7 +154,7 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
                     EtatsElement.values.map((status) {
                       return DropdownMenuItem(
                         value: status,
-                        child: Text(status.toString().split('.').last),
+                        child: Text(etatElementString(status)),
                       );
                     }).toList(),
                 onChanged: (value) => setState(() => _status = value!),

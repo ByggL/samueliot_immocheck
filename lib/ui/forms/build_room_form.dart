@@ -14,7 +14,7 @@ class RoomCreationForm extends StatefulWidget {
 
 class _RoomCreationForm extends State<RoomCreationForm> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
+  RoomTypes _nameController = RoomTypes.bathroom;
   EtatsElement? _selectedStatus;
 
   @override
@@ -32,17 +32,25 @@ class _RoomCreationForm extends State<RoomCreationForm> {
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-          TextFormField(
-            controller: _nameController,
+          DropdownButtonFormField<RoomTypes>(
+            initialValue: _nameController,
             decoration: const InputDecoration(
-              labelText: "Nom de la pièce",
+              labelText: "Type de pièce",
               border: OutlineInputBorder(),
             ),
+            items:
+                RoomTypes.values
+                    .map(
+                      (status) => DropdownMenuItem(
+                        value: status,
+                        child: Text(roomTypeString(status)),
+                      ),
+                    )
+                    .toList(),
+            onChanged: (value) => setState(() => _nameController = value!),
             validator:
                 (value) =>
-                    (value == null || value.isEmpty)
-                        ? "Veuillez entrer un nom"
-                        : null,
+                    value == null ? "Veuillez sélectionner un type" : null,
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<EtatsElement>(
@@ -56,7 +64,7 @@ class _RoomCreationForm extends State<RoomCreationForm> {
                     .map(
                       (status) => DropdownMenuItem(
                         value: status,
-                        child: Text(status.name),
+                        child: Text(etatElementString(status)),
                       ),
                     )
                     .toList(),
@@ -72,8 +80,8 @@ class _RoomCreationForm extends State<RoomCreationForm> {
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
                   final newRoom = Room(
-                    roomId: Uuid().toString(),
-                    roomName: _nameController.text,
+                    roomId: Uuid().v4(),
+                    roomName: _nameController.name,
                     statut: _selectedStatus!,
                     elements: [],
                   );

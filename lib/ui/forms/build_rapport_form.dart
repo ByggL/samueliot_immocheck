@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:samueliot_immocheck/data/enums.dart';
 import 'package:samueliot_immocheck/providers/rapport_provider.dart';
 import 'package:uuid/uuid.dart';
-
+import 'package:provider/provider.dart';
 
 class BuildRapportForm extends StatefulWidget {
 
@@ -44,7 +44,7 @@ class _BuildRapportFormState extends State<BuildRapportForm> {
     }
   }
 
-  void _submit() {
+  void _submit() async{
     if (_formKey.currentState?.validate() ?? false) {
       Rapport submittedRapport = Rapport(
         nom: _nameController.text,
@@ -56,16 +56,11 @@ class _BuildRapportFormState extends State<BuildRapportForm> {
         statutRapport: _selectedStatus!,
         signature: _signature ,
       );
-      RapportProvider rapportProvider = RapportProvider();
-      rapportProvider.loadRapports();
-      print(rapportProvider.properties.length);
+      final rapportProvider = context.read<RapportProvider>();
 
       rapportProvider.addRapportGlobal(submittedRapport);
-      print('yo');
-      print(rapportProvider.properties.length);
-      rapportProvider.saveRapports();
-      rapportProvider.loadRapports();
-      print(rapportProvider.properties.length);
+      await rapportProvider.saveRapports();
+
       Navigator.pop(context);
 
 
@@ -112,7 +107,7 @@ class _BuildRapportFormState extends State<BuildRapportForm> {
                           .map(
                             (status) => DropdownMenuItem(
                               value: status,
-                              child: Text(status.name),
+                              child: Text(etatRapportString(status)),
                             ),
                           )
                           .toList(),
@@ -128,7 +123,7 @@ class _BuildRapportFormState extends State<BuildRapportForm> {
                           .map(
                             (status) => DropdownMenuItem(
                               value: status,
-                              child: Text(status.name),
+                              child: Text(propertyString(status)),
                             ),
                           )
                           .toList(),

@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:samueliot_immocheck/ui/homepage/report_list.dart';
-import 'package:samueliot_immocheck/ui/homepage/room_page.dart';
+import 'package:provider/provider.dart';
+import 'package:samueliot_immocheck/providers/rapport_provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => RapportProvider(),
+      child:const MyApp()
+      ) 
+    );
 }
 
 class MyApp extends StatelessWidget {

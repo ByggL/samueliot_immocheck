@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:samueliot_immocheck/data/enums.dart';
+import 'package:samueliot_immocheck/providers/element_provider.dart';
 import 'package:samueliot_immocheck/providers/property_provider.dart';
 import 'package:samueliot_immocheck/providers/piece_provider.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -25,6 +26,8 @@ class Rapport extends Property {
 
   @override
   Map<String, dynamic> toJson() => {
+    'propertyId': propertyId, 
+    'creationDate': creationDate.toIso8601String(),
     'nom': nom,
     'adresse': adresse,
     'roomList': roomList.map((r) => r.toJson()).toList(),
@@ -39,7 +42,7 @@ class Rapport extends Property {
     roomList: (json['roomList'] as List).map((r) => Room.fromJson(r)).toList(),
     propertyType: PropertyTypes.values[json['propertyType']],
     propertyId: json['propertyId'],
-    creationDate: json['creationDate'],
+    creationDate: DateTime.parse(json['creationDate']),
     statutRapport: EtatsRapport.values[json['statutRapport']],
     signature: json['signature'],
   );
@@ -66,13 +69,6 @@ class RapportProvider extends ChangeNotifier{
     return null;
   }
 
-  void addRoomToRapport(String propertyId,Room roomToAdd){
-    Property? property = getRapportById(propertyId);
-    if (property==null){
-      throw Exception('No property found with this ID');
-    }
-    property.roomList.add(roomToAdd);
-  }
 
   // Save all properties to storage
   Future<void> saveRapports() async {
@@ -89,9 +85,46 @@ class RapportProvider extends ChangeNotifier{
     String? data = await _storage.read(key: 'properties_list');
     if (data != null) {
       List<dynamic> decoded = jsonDecode(data);
-      _properties = decoded.map((p) => Property.fromJson(p)).toList();
+      _properties.clear();
+      _properties.addAll(decoded.map((p) => Rapport.fromJson(p)).toList());
       notifyListeners();
     }
   }
 
+
+  // ROOM FUNCTIONS 
+  Room? _getRoomById(String roomId) {
+    for (var property in _properties.cast<Rapport>()) {
+      for (var room in property.roomList) {
+        if (room.roomId == roomId) {
+          return room;
+        }
+      }
+    }
+    return null;
+  }
+
+  void addRoomToRapport(String propertyId, Room roomToAdd) {
+    Property? property = getRapportById(propertyId);
+    if (property == null) {
+      throw Exception('No property found with this ID');
+    }
+    property.roomList.add(roomToAdd);
+    notifyListeners(); // Tell widgets something changed
+    saveRapports();   // Persist the change
+  }
+
+    void addElementToRoom(String roomId, RoomElement roomElementToAdd) {
+      Room? room = _getRoomById(roomId);
+
+      if (room == null) {
+        throw Exception('No room found with this ID');
+      }
+
+      // Since the original Room object is part of the stored list, modifying it works.
+      room.elements.add(roomElementToAdd);
+
+      notifyListeners(); // Tell widgets something changed
+      saveRapports();   // Persist the change
+    }
 }

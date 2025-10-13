@@ -7,6 +7,8 @@ import 'package:samueliot_immocheck/providers/rapport_provider.dart';
 import 'package:samueliot_immocheck/ui/forms/build_rapport_form.dart';
 import 'package:uuid/uuid.dart';
 import 'report_card.dart'; // make sure this path matches your structure
+import 'package:provider/provider.dart';
+
 
 class ReportList extends StatefulWidget {
   const ReportList({super.key});
@@ -40,9 +42,7 @@ class _ReportListState extends State<ReportList> {
   @override
   void initState() {
     super.initState();
-    RapportProvider rapportProvider = RapportProvider();
-    rapportProvider.loadRapports();
-    _reports=rapportProvider.properties.cast<Rapport>();
+    context.read<RapportProvider>().loadRapports();
   }
 
   void _addReport(Rapport report) {
@@ -59,6 +59,7 @@ class _ReportListState extends State<ReportList> {
 
   @override
   Widget build(BuildContext context) {
+    _reports = context.watch<RapportProvider>().properties.cast<Rapport>();
     return Scaffold(
       appBar: AppBar(title: const Text('Reports')),
       body: Column(

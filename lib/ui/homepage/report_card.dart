@@ -56,7 +56,7 @@ class ReportCard extends StatelessWidget {
                     Icon(icon, color: color, size: 20),
                     const SizedBox(width: 6),
                     Text(
-                      etatString(report.statutRapport),
+                      etatRapportString(report.statutRapport),
                       style: TextStyle(
                         color: color,
                         fontWeight: FontWeight.w600,

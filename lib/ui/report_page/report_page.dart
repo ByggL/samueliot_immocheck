@@ -6,6 +6,8 @@ import 'package:samueliot_immocheck/providers/piece_provider.dart';
 import 'package:samueliot_immocheck/providers/rapport_provider.dart';
 import 'package:samueliot_immocheck/ui/forms/build_room_form.dart';
 import 'package:samueliot_immocheck/ui/homepage/element_inspection_form.dart';
+import 'package:provider/provider.dart';
+
 
 class ReportPage extends StatefulWidget {
   final Rapport rapport;
@@ -44,9 +46,11 @@ class _ReportPageState extends State<ReportPage> {
   }
 
   void addRoomToProperty(Rapport rapport, Room newRoom) {
-    setState(() {
-      rapport.roomList.add(newRoom);
-    });
+    context.read<RapportProvider>()
+    .addRoomToRapport(
+      rapport.propertyId,
+      newRoom
+    );
   }
 
   @override
@@ -87,7 +91,7 @@ class _ReportPageState extends State<ReportPage> {
                     Text("Type: ${propertyString(rapport.propertyType)}"),
 
                     Text(
-                      "Statut du rapport: ${etatString(rapport.statutRapport)}",
+                      "Statut du rapport: ${etatRapportString(rapport.statutRapport)}",
                     ),
 
                     Text(
@@ -149,7 +153,7 @@ class _ReportPageState extends State<ReportPage> {
         ),
         subtitle: Text("Statut: ${room.statut.name}"),
         children: [
-          ...room.elements.map((element) => _buildRoomElementCard(element)),
+          ...room.elements.map((element) => _buildRoomElementCard(context, room, element)),
 
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -168,11 +172,21 @@ class _ReportPageState extends State<ReportPage> {
     );
   }
 
-  Widget _buildRoomElementCard(RoomElement element) {
+  Widget _buildRoomElementCard(BuildContext context, Room room, RoomElement element) {
     return ListTile(
       leading: const Icon(Icons.home_repair_service),
-      title: Text("Statut: ${element.statut.name}"),
+      title: Text("Statut: ${etatElementString(element.statut)}"),
       subtitle: Text(element.commentaire),
+      onTap: (){
+        Navigator.push(
+          context,
+          ElementInspectionFormPage.route(element, room),
+          ).then((_) {
+          // Call setState to force a rebuild of the ReportPage 
+          // to show the updated element data immediately upon return.
+          setState(() {}); 
+        });
+      },
       trailing:
           element.elementPicture.isNotEmpty
               ? const Icon(Icons.photo_library, color: Colors.blueAccent)
