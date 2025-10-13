@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:samueliot_immocheck/data/enums.dart';
-import 'package:samueliot_immocheck/providers/element_provider.dart';
-import 'package:samueliot_immocheck/providers/piece_provider.dart';
 import 'package:samueliot_immocheck/providers/rapport_provider.dart';
 import 'package:samueliot_immocheck/ui/forms/build_rapport_form.dart';
-import 'package:uuid/uuid.dart';
-import 'report_card.dart'; // make sure this path matches your structure
+import 'package:samueliot_immocheck/ui/homepage/report_card.dart'; 
 import 'package:provider/provider.dart';
 
 
@@ -45,17 +41,7 @@ class _ReportListState extends State<ReportList> {
     context.read<RapportProvider>().loadRapports();
   }
 
-  void _addReport(Rapport report) {
-    setState(() {
-      _reports.add(report);
-    });
-  }
 
-  void _removeReport(Rapport report) {
-    setState(() {
-      _reports.remove(report);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +108,10 @@ class _ReportListState extends State<ReportList> {
                         final report = _filteredReports[index];
                         return ReportCard(
                           report: report,
-                          onDelete: () => _removeReport(report),
+                          onDelete: () {
+                            context.read<RapportProvider>().removeRapport(report);
+                            setState(() {});
+                          },
                         );
                       },
                     ),

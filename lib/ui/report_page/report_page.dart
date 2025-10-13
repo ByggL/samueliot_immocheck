@@ -146,12 +146,29 @@ class _ReportPageState extends State<ReportPage> {
       margin: const EdgeInsets.symmetric(vertical: 8),
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ExpansionTile(
-        title: Text(
-          room.roomName,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+      child:
+      ExpansionTile(
+        title: Row( 
+          children: [
+            Expanded(
+              child: Text(
+                roomTypeString(room.roomName),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete, color: Colors.redAccent, size: 20),
+              onPressed: () {
+                context.read<RapportProvider>().deleteRoomFromRapport(
+                  widget.rapport.propertyId, 
+                  room.roomId,
+                );
+                setState(() {});
+              },
+            ),
+          ],
         ),
-        subtitle: Text("Statut: ${room.statut.name}"),
+        subtitle: Text("Statut: ${etatElementString(room.statut)}"),
         children: [
           ...room.elements.map((element) => _buildRoomElementCard(context, room, element)),
 
@@ -160,7 +177,7 @@ class _ReportPageState extends State<ReportPage> {
             child: Center(
               child: TextButton.icon(
                 onPressed: () {
-                  Navigator.push(context, ElementInspectionFormPage.route(null, room));
+                  Navigator.push(context, ElementInspectionFormPage.route(null, room)).then((_) {setState(() {});});
                 },
                 icon: const Icon(Icons.add_circle_outline),
                 label: const Text("Ajouter un élément"),
@@ -175,22 +192,41 @@ class _ReportPageState extends State<ReportPage> {
   Widget _buildRoomElementCard(BuildContext context, Room room, RoomElement element) {
     return ListTile(
       leading: const Icon(Icons.home_repair_service),
-      title: Text("Statut: ${etatElementString(element.statut)}"),
-      subtitle: Text(element.commentaire),
+      title: Text("Element: ${roomElementString(element.elementName)}"),
+      subtitle: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        spacing: 20,
+        children: [
+          Text("Statut: ${etatElementString(element.statut)}"),
+          Text("Commentaire: ${element.commentaire}"),
+        ],
+      ),
       onTap: (){
         Navigator.push(
           context,
           ElementInspectionFormPage.route(element, room),
-          ).then((_) {
-          // Call setState to force a rebuild of the ReportPage 
-          // to show the updated element data immediately upon return.
-          setState(() {}); 
-        });
+          ).then((_) {setState(() {});});
       },
-      trailing:
+      trailing:Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
           element.elementPicture.isNotEmpty
               ? const Icon(Icons.photo_library, color: Colors.blueAccent)
               : const Icon(Icons.photo_outlined, color: Colors.grey),
+              const SizedBox(width: 8),
+
+              IconButton(
+                icon: const Icon(Icons.delete, color: Colors.red),
+                onPressed: () {
+                  context.read<RapportProvider>().deleteElementFromRoom(
+                    room.roomId,
+                    element.elementID,
+                  );
+                  setState(() {});
+                },
+              ),
+        ],
+      ),
     );
   }
 }

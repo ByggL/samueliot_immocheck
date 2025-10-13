@@ -94,9 +94,7 @@ class _BuildRapportFormState extends State<BuildRapportForm> {
                 ),
                 const SizedBox(height: 16),
                 ListTile(
-                  title: Text(_selectedDate == null
-                      ? 'Sélectionner une date'
-                      : 'Date: ${_selectedDate!.toLocal().toString().split(' ')[0]}'),
+                  title: Text('Date: ${_selectedDate.toLocal().toString().split(' ')[0]}'),
                   trailing: const Icon(Icons.calendar_today),
                   onTap: _pickDate,
                 ),

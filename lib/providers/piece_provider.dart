@@ -8,7 +8,7 @@ import 'package:samueliot_immocheck/providers/property_provider.dart';
 
 class Room {
   final String roomId;
-  final String roomName;
+  final RoomTypes roomName;
   final EtatsElement statut;
   final List<RoomElement> elements;
 

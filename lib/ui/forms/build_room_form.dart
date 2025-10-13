@@ -6,7 +6,7 @@ import 'package:uuid/uuid.dart';
 class RoomCreationForm extends StatefulWidget {
   final Function(Room) onSubmit;
 
-  const RoomCreationForm({required this.onSubmit});
+  const RoomCreationForm({super.key,required this.onSubmit});
 
   @override
   State<RoomCreationForm> createState() => _RoomCreationForm();
@@ -81,7 +81,7 @@ class _RoomCreationForm extends State<RoomCreationForm> {
                 if (_formKey.currentState!.validate()) {
                   final newRoom = Room(
                     roomId: Uuid().v4(),
-                    roomName: _nameController.name,
+                    roomName: _nameController,
                     statut: _selectedStatus!,
                     elements: [],
                   );

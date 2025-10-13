@@ -3,10 +3,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:samueliot_immocheck/data/enums.dart';
 import 'dart:io';
 import 'package:samueliot_immocheck/providers/element_provider.dart';
-import 'package:samueliot_immocheck/providers/property_provider.dart';
 import 'package:samueliot_immocheck/providers/piece_provider.dart';
 import 'package:samueliot_immocheck/providers/rapport_provider.dart';
-import 'package:samueliot_immocheck/ui/report_page/report_page.dart';
 import 'package:uuid/uuid.dart';
 import 'package:provider/provider.dart';
 
@@ -63,9 +61,6 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
       _formKey.currentState?.save();
 
 
-        if (_elementId == ''){
-          _elementId = Uuid().v4();
-        }
         if (_comment ==''){
           _comment = 'RAS';
         }
@@ -82,7 +77,7 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
 
 
         context.read<RapportProvider>()
-        .addElementToRoom(
+        .saveElementToRoom(
           widget.roomToAddTo!.roomId,
            elementToAdd);
 
@@ -94,11 +89,10 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
           duration: Duration(milliseconds: 500),
         ),
       );
-      Navigator.of(context).pop();
+      Navigator.pop(context);
 
     }
 
-    Navigator.of(context).pop();
   }
 
 
@@ -112,6 +106,8 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
       _images = widget.element!.elementPicture.cast<XFile>();
       _elementId = widget.element!.elementID;
       _elementName = widget.element!.elementName;
+    } else{
+      _elementId = Uuid().v4();
     }
   }
 
@@ -133,7 +129,7 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
               ),
               SizedBox(height: 16),
               DropdownButtonFormField<RoomElements>(
-                decoration: InputDecoration(labelText: 'Status'),
+                decoration: InputDecoration(labelText: 'Room Element'),
                 initialValue: _elementName,
                 items:
                     RoomElements.values.map((element) {
@@ -144,7 +140,7 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
                     }).toList(),
                 onChanged: (value) => setState(() => _elementName = value!),
                 validator:
-                    (value) => value == null ? 'Please select a status' : null,
+                    (value) => value == null ? 'Please select a room element' : null,
               ),
               SizedBox(height: 16),
               DropdownButtonFormField<EtatsElement>(

@@ -114,17 +114,54 @@ class RapportProvider extends ChangeNotifier{
     saveRapports();   // Persist the change
   }
 
-    void addElementToRoom(String roomId, RoomElement roomElementToAdd) {
-      Room? room = _getRoomById(roomId);
+  void saveElementToRoom(String roomId, RoomElement newOrUpdatedElement) {
+    Room? room = _getRoomById(roomId);
 
-      if (room == null) {
-        throw Exception('No room found with this ID');
-      }
-
-      // Since the original Room object is part of the stored list, modifying it works.
-      room.elements.add(roomElementToAdd);
-
-      notifyListeners(); // Tell widgets something changed
-      saveRapports();   // Persist the change
+    if (room == null) {
+      throw Exception('Room not found with ID: $roomId');
     }
+
+    // Check if an element with this ID already exists (Update logic)
+    int index = room.elements.indexWhere((e) => e.elementID == newOrUpdatedElement.elementID);
+
+    if (index != -1) {
+      // It exists: REPLACE the old element with the updated one.
+      room.elements[index] = newOrUpdatedElement;
+    } else {
+      // It's new: ADD the new element.
+      room.elements.add(newOrUpdatedElement);
+    }
+    
+    // Notify all listeners and persist the change.
+    notifyListeners();
+    saveRapports();
+  }
+
+  void deleteElementFromRoom(String roomId, String elementId) {
+    Room? room = _getRoomById(roomId);
+    if (room == null) return;
+    
+    room.elements.removeWhere((e) => e.elementID == elementId);
+    
+    notifyListeners();
+    saveRapports();
+  }
+  
+  void deleteRoomFromRapport(String propertyId, String roomId) {
+    Property? rapport = getRapportById(propertyId);
+    if (rapport == null) return;
+    
+    rapport.roomList.removeWhere((r) => r.roomId == roomId);
+    
+    notifyListeners();
+    saveRapports();
+  }
+
+  void removeRapport(Property propertyToRemove){
+    _properties.removeWhere((p) => p.propertyId == propertyToRemove.propertyId);
+    notifyListeners();
+    // Also save after removal
+    saveRapports();
+  }
+
 }
