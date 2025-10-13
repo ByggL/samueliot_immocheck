@@ -157,6 +157,13 @@ class _ReportPageState extends State<ReportPage> {
               ),
             ),
             IconButton(
+              onPressed: (){
+                context.read<RapportProvider>().changeRoomStatus(room);
+                setState(() {});
+              } ,
+              icon: room.statut == EtatsElement.ok ? Icon(Icons.check) :Icon(Icons.radio_button_unchecked)
+            ),
+            IconButton(
               icon: const Icon(Icons.delete, color: Colors.redAccent, size: 20),
               onPressed: () {
                 context.read<RapportProvider>().deleteRoomFromRapport(
@@ -193,14 +200,7 @@ class _ReportPageState extends State<ReportPage> {
     return ListTile(
       leading: const Icon(Icons.home_repair_service),
       title: Text("Element: ${roomElementString(element.elementName)}"),
-      subtitle: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        spacing: 20,
-        children: [
-          Text("Statut: ${etatElementString(element.statut)}"),
-          Text("Commentaire: ${element.commentaire}"),
-        ],
-      ),
+      subtitle:Text("Statut: ${etatElementString(element.statut)}"),
       onTap: (){
         Navigator.push(
           context,
@@ -213,7 +213,8 @@ class _ReportPageState extends State<ReportPage> {
           element.elementPicture.isNotEmpty
               ? const Icon(Icons.photo_library, color: Colors.blueAccent)
               : const Icon(Icons.photo_outlined, color: Colors.grey),
-              const SizedBox(width: 8),
+
+              // const SizedBox(width: 8),
 
               IconButton(
                 icon: const Icon(Icons.delete, color: Colors.red),

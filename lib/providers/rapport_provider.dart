@@ -157,6 +157,14 @@ class RapportProvider extends ChangeNotifier{
     saveRapports();
   }
 
+  void changeRoomStatus(Room roomToCheck){
+    EtatsElement etatRoom = roomToCheck.statut;
+    etatRoom == EtatsElement.aReparer ? etatRoom=EtatsElement.aReparer:etatRoom=EtatsElement.ok;
+
+    notifyListeners();
+    saveRapports();
+  }
+
   void removeRapport(Property propertyToRemove){
     _properties.removeWhere((p) => p.propertyId == propertyToRemove.propertyId);
     notifyListeners();
