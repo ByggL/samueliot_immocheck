@@ -26,7 +26,6 @@ jobs:
           tar -xf flutter.tar.xz
           export PATH="$PWD/flutter/bin:$PATH"
           echo "$PWD/flutter/bin" >> $GITHUB_PATH
-          flutter doctor
 
       # Ensure Flutter is on the path
       - name: Flutter doctor
