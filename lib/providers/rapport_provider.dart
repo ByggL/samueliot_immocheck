@@ -104,6 +104,34 @@ class RapportProvider extends ChangeNotifier{
     return null;
   }
 
+  void validateRapport(Rapport report){
+      EtatsRapport newEtat ;
+      report.statutRapport == EtatsRapport.enCours ? newEtat=EtatsRapport.termine:newEtat=EtatsRapport.enCours;
+
+      int index = _properties.indexWhere((p) => p.propertyId == report.propertyId);
+
+      
+      if (index != -1) {
+        Rapport newRapport = Rapport(
+          propertyId: report.propertyId,
+          nom: report.nom,
+          adresse: report.adresse,
+          roomList: report.roomList,
+          propertyType: report.propertyType,
+          creationDate: report.creationDate,
+          signature: report.signature,
+          statutRapport: newEtat, 
+        );
+
+        _properties[index] = newRapport;
+
+        notifyListeners();
+        saveRapports();
+      }
+
+
+  }
+
   void addRoomToRapport(String propertyId, Room roomToAdd) {
     Property? property = getRapportById(propertyId);
     if (property == null) {
@@ -158,11 +186,29 @@ class RapportProvider extends ChangeNotifier{
   }
 
   void changeRoomStatus(Room roomToCheck){
-    EtatsElement etatRoom = roomToCheck.statut;
-    etatRoom == EtatsElement.aReparer ? etatRoom=EtatsElement.aReparer:etatRoom=EtatsElement.ok;
+    EtatsElement newEtat ;
+    roomToCheck.statut == EtatsElement.aReparer ? newEtat=EtatsElement.ok:newEtat=EtatsElement.aReparer;
 
-    notifyListeners();
-    saveRapports();
+    for (int i = 0; i < _properties.length; i++) {
+    var rapport = _properties[i] as Rapport;
+    int roomIndex = rapport.roomList.indexWhere((r) => r.roomId == roomToCheck.roomId);
+
+      if (roomIndex != -1) {
+        // Create a NEW Room object with the updated status
+        Room newRoom = Room(
+            roomId: roomToCheck.roomId,
+            roomName: roomToCheck.roomName,
+            statut: newEtat, // <<< The new status is applied here
+            elements: roomToCheck.elements,
+        );
+
+        // Replace the old Room object with the new one in the master list
+        rapport.roomList[roomIndex] = newRoom;
+        
+      notifyListeners();
+      saveRapports();
+      }
+    }
   }
 
   void removeRapport(Property propertyToRemove){

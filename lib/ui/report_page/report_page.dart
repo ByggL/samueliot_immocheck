@@ -36,20 +36,15 @@ class _ReportPageState extends State<ReportPage> {
             ),
             child: RoomCreationForm(
               onSubmit: (room) {
-                addRoomToProperty(widget.rapport, room);
+                    context.read<RapportProvider>().addRoomToRapport(
+                      widget.rapport.propertyId,
+                      room
+                      );
                 Navigator.pop(context);
                 setState(() {});
               },
             ),
           ),
-    );
-  }
-
-  void addRoomToProperty(Rapport rapport, Room newRoom) {
-    context.read<RapportProvider>()
-    .addRoomToRapport(
-      rapport.propertyId,
-      newRoom
     );
   }
 
@@ -66,43 +61,59 @@ class _ReportPageState extends State<ReportPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
 
           children: [
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
 
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
+              children: [
+                Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
 
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      rapport.nom,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          rapport.nom,
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+
+                        const SizedBox(height: 8),
+                        Text("Adresse: ${rapport.adresse}"),
+
+                        Text("Type: ${propertyString(rapport.propertyType)}"),
+
+                        Text(
+                          "Statut du rapport: ${etatRapportString(rapport.statutRapport)}",
+                        ),
+
+                        Text(
+                          "Créé le: ${DateFormat('yyyy-MM-dd – kk:mm').format(rapport.creationDate)}",
+                        ),
+
+                        const SizedBox(height: 8),
+                        Text("Signature: ${rapport.signature}"),
+                      ],
                     ),
-
-                    const SizedBox(height: 8),
-                    Text("Adresse: ${rapport.adresse}"),
-
-                    Text("Type: ${propertyString(rapport.propertyType)}"),
-
-                    Text(
-                      "Statut du rapport: ${etatRapportString(rapport.statutRapport)}",
-                    ),
-
-                    Text(
-                      "Créé le: ${DateFormat('yyyy-MM-dd – kk:mm').format(rapport.creationDate)}",
-                    ),
-
-                    const SizedBox(height: 8),
-                    Text("Signature: ${rapport.signature}"),
-                  ],
+                  ),
                 ),
-              ),
+                ElevatedButton.icon(
+                  onPressed: (){
+                    context.read<RapportProvider>().validateRapport(rapport);
+                    Navigator.pop(context);
+                    setState((){});
+                  }, 
+                  icon: Icon(Icons.check),
+                  label: Text("Valider le rapport",maxLines: 3,)
+                ),
+
+              ],
             ),
             const SizedBox(height: 16),
 
