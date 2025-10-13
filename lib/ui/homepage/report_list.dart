@@ -4,6 +4,7 @@ import 'package:samueliot_immocheck/data/enums.dart';
 import 'package:samueliot_immocheck/providers/element_provider.dart';
 import 'package:samueliot_immocheck/providers/piece_provider.dart';
 import 'package:samueliot_immocheck/providers/rapport_provider.dart';
+import 'package:samueliot_immocheck/ui/forms/build_rapport_form.dart';
 import 'package:uuid/uuid.dart';
 import 'report_card.dart'; // make sure this path matches your structure
 
@@ -15,34 +16,8 @@ class ReportList extends StatefulWidget {
 }
 
 class _ReportListState extends State<ReportList> {
-  // Placeholder list of reports
-  final List<Rapport> _reports = [
-    Rapport(
-      nom: "Appartement",
-      propertyId: Uuid().v4(),
-      propertyType: PropertyTypes.appartement,
-      creationDate: DateTime(2025, 10, 8),
-      adresse: "1234 Elm Street, Los Angeles, CA",
-      statutRapport: EtatsRapport.termine,
-      roomList: [
-        Room(
-          roomName: "Pièce de vie",
-          statut: EtatsElement.ok,
-          roomId: Uuid().v4(),
-          elements: [
-            RoomElement(
-              commentaire: "RAS",
-              elementName: RoomElements.appliances,
-              elementID: Uuid().v4(),
-              statut: EtatsElement.ok,
-              elementPicture: ["elementPicture"],
-            ),
-          ],
-        ),
-      ],
-      signature: "oui",
-    ),
-  ];
+
+  List<Rapport> _reports = [];
 
   final TextEditingController _searchController = TextEditingController();
   String _searchField = 'name'; // current field used for filtering
@@ -60,6 +35,14 @@ class _ReportListState extends State<ReportList> {
       };
       return fieldValue.toLowerCase().contains(_searchQuery.toLowerCase());
     }).toList();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    RapportProvider rapportProvider = RapportProvider();
+    rapportProvider.loadRapports();
+    _reports=rapportProvider.properties.cast<Rapport>();
   }
 
   void _addReport(Rapport report) {
@@ -146,35 +129,8 @@ class _ReportListState extends State<ReportList> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // PLACEHOLDER dummy report add button
-          _addReport(
-            Rapport(
-              nom: "Appartement",
-              propertyId: Uuid().v4(),
-              propertyType: PropertyTypes.appartement,
-              creationDate: DateTime(2025, 10, 8),
-              adresse: "1234 Elm Street, Los Angeles, CA",
-              statutRapport: EtatsRapport.termine,
-              roomList: [
-                Room(
-                  roomName: "Pièce de vie",
-                  roomId: Uuid().v4(),
-                  statut: EtatsElement.ok,
-                  elements: [
-                    RoomElement(
-                      commentaire: "RAS",
-                      elementID: Uuid().v4(),
-                      elementName: RoomElements.floor,
-                      statut: EtatsElement.ok,
-                      elementPicture: ["elementPicture"],
-                    ),
-                  ],
-                ),
-              ],
-              signature: "oui",
-            ),
-          );
+        onPressed: ()  {
+          Navigator.push(context, BuildRapportForm.route());
         },
         label: const Text("Add Report"),
         icon: const Icon(Icons.add),

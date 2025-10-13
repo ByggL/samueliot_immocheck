@@ -31,9 +31,9 @@ class Room {
 
 class RoomProvider extends ChangeNotifier{
 
-  Room? getRoomById(String roomId) {
+  Future<Room?> getRoomById(String roomId) async {
     PropertyProvider provider = PropertyProvider();
-    provider.loadProperties();
+    await provider.loadProperties();
     List<Property> allProperties = provider.properties;
     for (Property property in allProperties){
       for (Room room in property.roomList){
@@ -57,8 +57,9 @@ class RoomProvider extends ChangeNotifier{
     return null;
   }
   
-  void addElementToRoom(String roomId,RoomElement roomElementToAdd){
-    Room? room = getRoomById(roomId);
+  void addElementToRoom(String roomId,RoomElement roomElementToAdd) async{
+    Room? room = await getRoomById(roomId);
+    
     if (room==null){
       throw Exception('No room found with this ID');
     }

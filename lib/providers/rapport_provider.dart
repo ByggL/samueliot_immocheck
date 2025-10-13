@@ -48,17 +48,50 @@ class Rapport extends Property {
 class RapportProvider extends ChangeNotifier{
   final _storage = FlutterSecureStorage();
 
-  // Save rapport
-  Future<void> saveRapport(Rapport rapport) async {
-    await _storage.write(key: 'rapport_${rapport.nom}', value: jsonEncode(rapport.toJson()));
+  List<Property> _properties = [];
+
+  List<Property> get properties => List.unmodifiable(_properties);
+
+
+  void addRapportGlobal(Property propertyToAdd){
+    _properties.add(propertyToAdd);
   }
 
-  // Load rapport
-  Future<Rapport?> loadRapport(String nom) async {
-    String? data = await _storage.read(key: 'rapport_$nom');
-    if (data != null) {
-      return Rapport.fromJson(jsonDecode(data));
-    }
+  Property? getRapportById(String id){
+    for (Property property in _properties){
+        if (property.propertyId == id){
+          return property;
+        }
+    } 
     return null;
   }
+
+  void addRoomToRapport(String propertyId,Room roomToAdd){
+    Property? property = getRapportById(propertyId);
+    if (property==null){
+      throw Exception('No property found with this ID');
+    }
+    property.roomList.add(roomToAdd);
+  }
+
+  // Save all properties to storage
+  Future<void> saveRapports() async {
+    await _storage.write(
+      key: 'properties_list',
+      value: jsonEncode(_properties.map((p) => p.toJson()).toList()),
+    );
+    notifyListeners();
+  }
+
+
+  // Load all properties from storage
+  Future<void> loadRapports() async {
+    String? data = await _storage.read(key: 'properties_list');
+    if (data != null) {
+      List<dynamic> decoded = jsonDecode(data);
+      _properties = decoded.map((p) => Property.fromJson(p)).toList();
+      notifyListeners();
+    }
+  }
+
 }

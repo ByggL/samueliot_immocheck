@@ -3,21 +3,20 @@ import 'package:samueliot_immocheck/providers/piece_provider.dart';
 import 'package:samueliot_immocheck/ui/homepage/element_inspection_form.dart';
 
 class RoomPage extends StatelessWidget {
-  final String roomId;
+  final Room room;
 
-  static Route<void> route(String roomId) {
+  static Route<void> route(Room room) {
     return MaterialPageRoute<void>(
       settings: const RouteSettings(name: '/roomPage'),
-      builder: (_) => RoomPage(roomId: roomId,),
+      builder: (_) => RoomPage(room: room,),
     );
   }
 
-  const RoomPage({super.key, required this.roomId});
+  const RoomPage({super.key, required this.room});
 
   @override
   Widget build(BuildContext context) {
     final RoomProvider provider=RoomProvider();
-    Room? room = provider.getRoomById(roomId);
 
     if (room == null) {
       return Scaffold(
@@ -41,7 +40,7 @@ class RoomPage extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Edit ??'),duration: Duration(milliseconds: 500),),
                   );  
-                Navigator.push(context, ElementInspectionFormPage.route(element));
+                Navigator.push(context, ElementInspectionFormPage.route(element,room));
               },
 
             ),

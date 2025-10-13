@@ -3,15 +3,20 @@ import 'package:image_picker/image_picker.dart';
 import 'package:samueliot_immocheck/data/enums.dart';
 import 'dart:io';
 import 'package:samueliot_immocheck/providers/element_provider.dart';
+import 'package:samueliot_immocheck/providers/property_provider.dart';
+import 'package:samueliot_immocheck/providers/piece_provider.dart';
+import 'package:samueliot_immocheck/ui/report_page/report_page.dart';
+import 'package:uuid/uuid.dart';
 
 class ElementInspectionFormPage extends StatefulWidget {
   final RoomElement? element;
-  const ElementInspectionFormPage({super.key, this.element});
+  final Room? roomToAddTo;
+  const ElementInspectionFormPage({super.key, this.element, required this.roomToAddTo});
 
-  static Route<void> route(RoomElement? element) {
+  static Route<void> route(RoomElement? element, Room? roomToAddTo) {
     return MaterialPageRoute<void>(
       settings: const RouteSettings(name: '/elementsInspectionForm'),
-      builder: (_) => ElementInspectionFormPage(element: element),
+      builder: (_) => ElementInspectionFormPage(element: element, roomToAddTo: roomToAddTo),
     );
   }
 
@@ -24,7 +29,9 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
   final _formKey = GlobalKey<FormState>();
 
   String _comment = '';
-  EtatsElement? _status;
+  String _elementId='';
+  RoomElements _elementName = RoomElements.floor;
+  EtatsElement _status = EtatsElement.ok;
   List<XFile> _images = [];
 
   Future<void> _pickImage(ImageSource source) async {
@@ -45,10 +52,44 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
     });
   }
 
-  void _submit() {
-    //TODO: add logic after validation
+  void _submit(){
+    RoomProvider roomProvider = RoomProvider();
+
+    
     if (_formKey.currentState?.validate() ?? false) {
       _formKey.currentState?.save();
+
+      setState(() {
+          // print(widget.roomToAddTo!.roomId);
+          // print(_comment);
+          // print(_elementName);
+          // print(_elementId);
+          // print(_images);
+          // print(_status);
+        if (_elementId == ''){
+          _elementId = Uuid().v4();
+        }
+        if (_comment ==''){
+          _comment = 'RAS';
+        }
+          // print(widget.roomToAddTo!.roomId);
+          // print(_comment);
+          // print(_elementName);
+          // print(_elementId);
+          // print(_images);
+          // print(_status);
+        RoomElement elementToAdd =
+          RoomElement(
+            commentaire: _comment ,
+            elementID: _elementId ,
+            elementPicture:_images,
+            statut: _status,
+            elementName:_elementName,
+            );
+          
+        roomProvider.addElementToRoom(widget.roomToAddTo!.roomId, elementToAdd);    
+
+      });
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -57,7 +98,10 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
         ),
       );
     }
+
+    Navigator.of(context).pop();
   }
+
 
   @override
   void initState() {
@@ -66,6 +110,8 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
       _comment = widget.element!.commentaire;
       _status = widget.element!.statut;
       _images = widget.element!.elementPicture.cast<XFile>();
+      _elementId = widget.element!.elementID;
+      _elementName = widget.element!.elementName;
     }
   }
 
@@ -86,9 +132,24 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
                 onSaved: (value) => _comment = value ?? '',
               ),
               SizedBox(height: 16),
+              DropdownButtonFormField<RoomElements>(
+                decoration: InputDecoration(labelText: 'Status'),
+                initialValue: _elementName,
+                items:
+                    RoomElements.values.map((element) {
+                      return DropdownMenuItem(
+                        value: element,
+                        child: Text(element.toString().split('.').last),
+                      );
+                    }).toList(),
+                onChanged: (value) => setState(() => _elementName = value!),
+                validator:
+                    (value) => value == null ? 'Please select a status' : null,
+              ),
+              SizedBox(height: 16),
               DropdownButtonFormField<EtatsElement>(
                 decoration: InputDecoration(labelText: 'Status'),
-                value: _status,
+                initialValue: _status,
                 items:
                     EtatsElement.values.map((status) {
                       return DropdownMenuItem(
@@ -96,7 +157,7 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
                         child: Text(status.toString().split('.').last),
                       );
                     }).toList(),
-                onChanged: (value) => setState(() => _status = value),
+                onChanged: (value) => setState(() => _status = value!),
                 validator:
                     (value) => value == null ? 'Please select a status' : null,
               ),

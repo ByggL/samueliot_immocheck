@@ -46,7 +46,7 @@ class _RoomCreationForm extends State<RoomCreationForm> {
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<EtatsElement>(
-            value: _selectedStatus,
+            initialValue: _selectedStatus,
             decoration: const InputDecoration(
               labelText: "Statut de la pièce",
               border: OutlineInputBorder(),

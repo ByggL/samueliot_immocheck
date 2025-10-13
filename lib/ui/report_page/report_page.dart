@@ -5,6 +5,7 @@ import 'package:samueliot_immocheck/providers/element_provider.dart';
 import 'package:samueliot_immocheck/providers/piece_provider.dart';
 import 'package:samueliot_immocheck/providers/rapport_provider.dart';
 import 'package:samueliot_immocheck/ui/forms/build_room_form.dart';
+import 'package:samueliot_immocheck/ui/homepage/element_inspection_form.dart';
 
 class ReportPage extends StatefulWidget {
   final Rapport rapport;
@@ -154,7 +155,9 @@ class _ReportPageState extends State<ReportPage> {
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Center(
               child: TextButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context, ElementInspectionFormPage.route(null, room));
+                },
                 icon: const Icon(Icons.add_circle_outline),
                 label: const Text("Ajouter un élément"),
               ),
