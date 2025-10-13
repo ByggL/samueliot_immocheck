@@ -130,7 +130,7 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
               SizedBox(height: 16),
               DropdownButtonFormField<RoomElements>(
                 decoration: InputDecoration(labelText: 'Room Element'),
-                initialValue: _elementName,
+                value: _elementName,
                 items:
                     RoomElements.values.map((element) {
                       return DropdownMenuItem(
@@ -145,7 +145,7 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
               SizedBox(height: 16),
               DropdownButtonFormField<EtatsElement>(
                 decoration: InputDecoration(labelText: 'Status'),
-                initialValue: _status,
+                value: _status,
                 items:
                     EtatsElement.values.map((status) {
                       return DropdownMenuItem(
