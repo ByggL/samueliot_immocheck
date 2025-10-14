@@ -33,7 +33,7 @@ class _RoomCreationForm extends State<RoomCreationForm> {
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<RoomTypes>(
-            initialValue: _nameController,
+            value: _nameController,
             decoration: const InputDecoration(
               labelText: "Type de pièce",
               border: OutlineInputBorder(),
@@ -54,7 +54,7 @@ class _RoomCreationForm extends State<RoomCreationForm> {
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<EtatsElement>(
-            initialValue: _selectedStatus,
+            value: _selectedStatus,
             decoration: const InputDecoration(
               labelText: "Statut de la pièce",
               border: OutlineInputBorder(),
