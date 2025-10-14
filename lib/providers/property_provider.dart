@@ -78,7 +78,7 @@ class PropertyProvider extends ChangeNotifier{
     String? data = await _storage.read(key: 'properties_list');
     if (data != null) {
       List<dynamic> decoded = jsonDecode(data);
-      print(decoded);
+      // print(decoded);
       _properties = decoded.map((p) => Property.fromJson(p)).toList();
       notifyListeners();
     }

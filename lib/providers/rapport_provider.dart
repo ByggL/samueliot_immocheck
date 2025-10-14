@@ -51,10 +51,11 @@ class Rapport extends Property {
 class RapportProvider extends ChangeNotifier{
   final _storage = FlutterSecureStorage();
 
-  List<Property> _properties = [];
+  final List<Property> _properties = [];
 
   List<Property> get properties => List.unmodifiable(_properties);
 
+  // Global functions
 
   void addRapportGlobal(Property propertyToAdd){
     _properties.add(propertyToAdd);
@@ -91,6 +92,48 @@ class RapportProvider extends ChangeNotifier{
     }
   }
 
+  void validateRapport(Rapport report){
+    EtatsRapport newEtat ;
+    report.statutRapport == EtatsRapport.enCours ? newEtat=EtatsRapport.termine:newEtat=EtatsRapport.enCours;
+
+    int index = _properties.indexWhere((p) => p.propertyId == report.propertyId);
+
+    
+    if (index != -1) {
+      Rapport newRapport = Rapport(
+        propertyId: report.propertyId,
+        nom: report.nom,
+        adresse: report.adresse,
+        roomList: report.roomList,
+        propertyType: report.propertyType,
+        creationDate: report.creationDate,
+        signature: report.signature,
+        statutRapport: newEtat, 
+      );
+
+      _properties[index] = newRapport;
+
+      notifyListeners();
+      saveRapports();
+    }
+}
+
+  void deleteRoomFromRapport(String propertyId, String roomId) {
+    Property? rapport = getRapportById(propertyId);
+    if (rapport == null) return;
+    
+    rapport.roomList.removeWhere((r) => r.roomId == roomId);
+    
+    notifyListeners();
+    saveRapports();
+  }
+
+  void removeRapport(Property propertyToRemove){
+    _properties.removeWhere((p) => p.propertyId == propertyToRemove.propertyId);
+    notifyListeners();
+    // Also save after removal
+    saveRapports();
+  }
 
   // ROOM FUNCTIONS 
   Room? _getRoomById(String roomId) {
@@ -104,33 +147,7 @@ class RapportProvider extends ChangeNotifier{
     return null;
   }
 
-  void validateRapport(Rapport report){
-      EtatsRapport newEtat ;
-      report.statutRapport == EtatsRapport.enCours ? newEtat=EtatsRapport.termine:newEtat=EtatsRapport.enCours;
 
-      int index = _properties.indexWhere((p) => p.propertyId == report.propertyId);
-
-      
-      if (index != -1) {
-        Rapport newRapport = Rapport(
-          propertyId: report.propertyId,
-          nom: report.nom,
-          adresse: report.adresse,
-          roomList: report.roomList,
-          propertyType: report.propertyType,
-          creationDate: report.creationDate,
-          signature: report.signature,
-          statutRapport: newEtat, 
-        );
-
-        _properties[index] = newRapport;
-
-        notifyListeners();
-        saveRapports();
-      }
-
-
-  }
 
   void addRoomToRapport(String propertyId, Room roomToAdd) {
     Property? property = getRapportById(propertyId);
@@ -175,15 +192,7 @@ class RapportProvider extends ChangeNotifier{
     saveRapports();
   }
   
-  void deleteRoomFromRapport(String propertyId, String roomId) {
-    Property? rapport = getRapportById(propertyId);
-    if (rapport == null) return;
-    
-    rapport.roomList.removeWhere((r) => r.roomId == roomId);
-    
-    notifyListeners();
-    saveRapports();
-  }
+
 
   void changeRoomStatus(Room roomToCheck){
     EtatsElement newEtat ;
@@ -211,11 +220,6 @@ class RapportProvider extends ChangeNotifier{
     }
   }
 
-  void removeRapport(Property propertyToRemove){
-    _properties.removeWhere((p) => p.propertyId == propertyToRemove.propertyId);
-    notifyListeners();
-    // Also save after removal
-    saveRapports();
-  }
+
 
 }
