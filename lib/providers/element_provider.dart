@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:samueliot_immocheck/data/enums.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
@@ -18,7 +19,7 @@ class RoomElement {
     'elementName': elementName.index,
     'commentaire': commentaire,
     'statut': statut.index,
-    'elementPicture': elementPicture,
+    'elementPicture': elementPicture.map((xfile) => xfile is String? xfile : xfile.path).toList(),
   };
 
   factory RoomElement.fromJson(Map<String, dynamic> json) => RoomElement(
