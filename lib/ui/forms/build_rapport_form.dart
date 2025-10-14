@@ -100,7 +100,7 @@ class _BuildRapportFormState extends State<BuildRapportForm> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<EtatsRapport>(
-                  initialValue: _selectedStatus,
+                  value: _selectedStatus,
                   items: EtatsRapport.values
                           .map(
                             (status) => DropdownMenuItem(
@@ -116,7 +116,7 @@ class _BuildRapportFormState extends State<BuildRapportForm> {
                 ),
                 const SizedBox(height: 24),
                 DropdownButtonFormField<PropertyTypes>(
-                  initialValue: _propertyType,
+                  value: _propertyType,
                   items: PropertyTypes.values
                           .map(
                             (status) => DropdownMenuItem(
@@ -132,7 +132,7 @@ class _BuildRapportFormState extends State<BuildRapportForm> {
                 ),          
                 const SizedBox(height: 24),
                 DropdownButtonFormField<String>(
-                  initialValue: _signature,
+                  value: _signature,
                   items: ['Oui', 'Non']
                           .map(
                             (status) => DropdownMenuItem(
