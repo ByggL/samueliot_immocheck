@@ -61,6 +61,34 @@ class RapportProvider extends ChangeNotifier{
     _properties.add(propertyToAdd);
   }
 
+  Property? getPropertyById(String id){
+    for (Property property in _properties){
+        if (property.propertyId == id){
+          return property;
+        }
+    } 
+    return null;
+  }
+
+  Property? getPropertyByRoomId(String roomId){
+    for (var property in _properties) {
+      for (var room in property.roomList) {
+        if (room.roomId == roomId) {
+          return property;
+        }
+      }
+    }
+    return null;
+  }
+
+  void updateRapportGlobal(Property propertyToUpdate){
+    int index = _properties.indexWhere((p) => p.propertyId == propertyToUpdate.propertyId);
+    if (index != -1) {
+      _properties[index] = propertyToUpdate;
+      notifyListeners();
+    }
+  }
+
   Property? getRapportById(String id){
     for (Property property in _properties){
         if (property.propertyId == id){
@@ -80,7 +108,7 @@ class RapportProvider extends ChangeNotifier{
     notifyListeners();
   }
 
-
+  
   // Load all properties from storage
   Future<void> loadRapports() async {
     String? data = await _storage.read(key: 'properties_list');
@@ -116,7 +144,7 @@ class RapportProvider extends ChangeNotifier{
       notifyListeners();
       saveRapports();
     }
-}
+  }
 
   void deleteRoomFromRapport(String propertyId, String roomId) {
     Property? rapport = getRapportById(propertyId);
@@ -155,6 +183,8 @@ class RapportProvider extends ChangeNotifier{
       throw Exception('No property found with this ID');
     }
     property.roomList.add(roomToAdd);
+
+    updateRapportGlobal(property);
     notifyListeners(); // Tell widgets something changed
     saveRapports();   // Persist the change
   }
@@ -177,6 +207,10 @@ class RapportProvider extends ChangeNotifier{
       room.elements.add(newOrUpdatedElement);
     }
     
+    Property? propertyUpdated = getPropertyByRoomId(roomId);
+    if (propertyUpdated != null) {
+      updateRapportGlobal(propertyUpdated);
+    }
     // Notify all listeners and persist the change.
     notifyListeners();
     saveRapports();
@@ -188,6 +222,10 @@ class RapportProvider extends ChangeNotifier{
     
     room.elements.removeWhere((e) => e.elementID == elementId);
     
+    Property? propertyUpdated = getPropertyByRoomId(roomId);
+    if (propertyUpdated != null) {
+      updateRapportGlobal(propertyUpdated);
+    }
     notifyListeners();
     saveRapports();
   }
@@ -213,7 +251,11 @@ class RapportProvider extends ChangeNotifier{
 
         // Replace the old Room object with the new one in the master list
         rapport.roomList[roomIndex] = newRoom;
-        
+      
+      Property? propertyUpdated = getPropertyByRoomId(newRoom.roomId);
+      if (propertyUpdated != null) {
+        updateRapportGlobal(propertyUpdated);
+      }
       notifyListeners();
       saveRapports();
       }
