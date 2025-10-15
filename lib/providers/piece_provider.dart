@@ -16,14 +16,14 @@ class Room {
 
   Map<String, dynamic> toJson() => {
     'id': roomId,
-    'roomName': roomName,
+    'roomName': roomName.index,
     'statut': statut.index,
     'elements': elements.map((e) => e.toJson()).toList(),
   };
 
   factory Room.fromJson(Map<String, dynamic> json) => Room(
     roomId: json['id'],
-    roomName: json['roomName'],
+    roomName: RoomTypes.values[json['roomName']],
     statut: EtatsElement.values[json['statut']],
     elements: (json['elements'] as List).map((e) => RoomElement.fromJson(e)).toList(),
   );

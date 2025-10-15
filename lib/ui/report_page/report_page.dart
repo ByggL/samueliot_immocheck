@@ -103,6 +103,8 @@ class _ReportPageState extends State<ReportPage> {
                     ),
                   ),
                 ),
+                rapport.statutRapport==EtatsRapport.termine?
+                Text("Rapport déjà validé"):
                 ElevatedButton.icon(
                   onPressed: (){
                     context.read<RapportProvider>().validateRapport(rapport);
@@ -130,6 +132,8 @@ class _ReportPageState extends State<ReportPage> {
             const SizedBox(height: 16),
 
             // ➕ Add Room Button at bottom
+            rapport.statutRapport==EtatsRapport.termine?
+            Text("Rapport déjà validé, impossible d'ajouter des pièces"):
             Center(
               child: ElevatedButton.icon(
                 onPressed: () => _openAddRoomForm(context),
