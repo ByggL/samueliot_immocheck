@@ -12,7 +12,111 @@ class Room {
   final EtatsElement statut;
   final List<RoomElement> elements;
 
-  Room({required this.roomName, required this.statut, required this.elements, required this.roomId});
+  Room({
+    required this.roomName,
+    required this.statut,
+    List<RoomElement>? elements,
+    required this.roomId,
+  }) : elements = elements ?? Room.defaultElementsForRoomType(roomName, roomId);
+
+static List<RoomElement> defaultElementsForRoomType(RoomTypes type, String roomId) {
+    print(type);
+    // Helper to create a RoomElement with minimal info
+    RoomElement makeElement(RoomElements el) => RoomElement(
+      elementID: '${roomId}_${el.name}',
+      elementName: el,
+      commentaire: '',
+      statut: EtatsElement.ok,
+      elementPicture: [],
+    );
+
+    switch (type) {
+      case RoomTypes.entrance:
+        return [
+          makeElement(RoomElements.door),
+          makeElement(RoomElements.walls),
+          makeElement(RoomElements.floor),
+          makeElement(RoomElements.ceiling),
+          makeElement(RoomElements.lighting),
+          makeElement(RoomElements.electricalOutlets),
+        ];
+
+      case RoomTypes.livingRoom:
+        return [
+          makeElement(RoomElements.walls),
+          makeElement(RoomElements.floor),
+          makeElement(RoomElements.ceiling),
+          makeElement(RoomElements.window),
+          makeElement(RoomElements.lighting),
+          makeElement(RoomElements.heating),
+          makeElement(RoomElements.electricalOutlets),
+          makeElement(RoomElements.balconyOrTerrace),
+          makeElement(RoomElements.fireplace),
+        ];
+
+      case RoomTypes.kitchen:
+        return [
+          makeElement(RoomElements.walls),
+          makeElement(RoomElements.floor),
+          makeElement(RoomElements.ceiling),
+          makeElement(RoomElements.window),
+          makeElement(RoomElements.lighting),
+          makeElement(RoomElements.electricalOutlets),
+          makeElement(RoomElements.ventilation),
+          makeElement(RoomElements.countertop),
+          makeElement(RoomElements.cabinets),
+          makeElement(RoomElements.sink),
+          makeElement(RoomElements.stove),
+          makeElement(RoomElements.refrigeratorSpace),
+        ];
+
+      case RoomTypes.bathroom:
+        return [
+          makeElement(RoomElements.walls),
+          makeElement(RoomElements.floor),
+          makeElement(RoomElements.ceiling),
+          makeElement(RoomElements.window),
+          makeElement(RoomElements.lighting),
+          makeElement(RoomElements.ventilation),
+          makeElement(RoomElements.sinkVanity),
+          makeElement(RoomElements.bathtubOrShower),
+          makeElement(RoomElements.heating),
+        ];
+
+      case RoomTypes.bedroom:
+        return [
+          makeElement(RoomElements.walls),
+          makeElement(RoomElements.floor),
+          makeElement(RoomElements.ceiling),
+          makeElement(RoomElements.window),
+          makeElement(RoomElements.lighting),
+          makeElement(RoomElements.heating),
+          makeElement(RoomElements.electricalOutlets),
+          makeElement(RoomElements.wardrobe),
+        ];
+
+      case RoomTypes.wc:
+        return [
+          makeElement(RoomElements.walls),
+          makeElement(RoomElements.floor),
+          makeElement(RoomElements.ceiling),
+          makeElement(RoomElements.lighting),
+          makeElement(RoomElements.toilets),
+          makeElement(RoomElements.ventilation),
+        ];
+        
+      case RoomTypes.other:
+        return [
+          makeElement(RoomElements.walls),
+          makeElement(RoomElements.floor),
+          makeElement(RoomElements.ceiling),
+          makeElement(RoomElements.window),
+          makeElement(RoomElements.door),
+          makeElement(RoomElements.lighting),
+          makeElement(RoomElements.electricalOutlets),
+        ];
+    }
+  }
 
   Map<String, dynamic> toJson() => {
     'id': roomId,

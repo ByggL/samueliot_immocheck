@@ -51,18 +51,18 @@ class Rapport extends Property {
 class RapportProvider extends ChangeNotifier{
   final _storage = FlutterSecureStorage();
 
-  final List<Property> _properties = [];
+  final List<Rapport> _properties = [];
 
   List<Property> get properties => List.unmodifiable(_properties);
 
   // Global functions
 
-  void addRapportGlobal(Property propertyToAdd){
+  void addRapportGlobal(Rapport propertyToAdd){
     _properties.add(propertyToAdd);
   }
 
-  Property? getPropertyById(String id){
-    for (Property property in _properties){
+  Rapport? getPropertyById(String id){
+    for (Rapport property in _properties){
         if (property.propertyId == id){
           return property;
         }
@@ -70,7 +70,7 @@ class RapportProvider extends ChangeNotifier{
     return null;
   }
 
-  Property? getPropertyByRoomId(String roomId){
+  Rapport? getPropertyByRoomId(String roomId){
     for (var property in _properties) {
       for (var room in property.roomList) {
         if (room.roomId == roomId) {
@@ -81,7 +81,7 @@ class RapportProvider extends ChangeNotifier{
     return null;
   }
 
-  void updateRapportGlobal(Property propertyToUpdate){
+  void updateRapportGlobal(Rapport propertyToUpdate){
     int index = _properties.indexWhere((p) => p.propertyId == propertyToUpdate.propertyId);
     if (index != -1) {
       _properties[index] = propertyToUpdate;
@@ -89,8 +89,8 @@ class RapportProvider extends ChangeNotifier{
     }
   }
 
-  Property? getRapportById(String id){
-    for (Property property in _properties){
+  Rapport? getRapportById(String id){
+    for (Rapport property in _properties){
         if (property.propertyId == id){
           return property;
         }
@@ -186,7 +186,7 @@ class RapportProvider extends ChangeNotifier{
 
 
   void addRoomToRapport(String propertyId, Room roomToAdd) {
-    Property? property = getRapportById(propertyId);
+    Rapport? property = getRapportById(propertyId);
     if (property == null) {
       throw Exception('No property found with this ID');
     }
@@ -216,7 +216,7 @@ class RapportProvider extends ChangeNotifier{
       room.elements.add(newOrUpdatedElement);
     }
     
-    Property? propertyUpdated = getPropertyByRoomId(roomId);
+    Rapport? propertyUpdated = getPropertyByRoomId(roomId);
     if (propertyUpdated != null) {
       updateRapportGlobal(propertyUpdated);
     }
@@ -231,7 +231,7 @@ class RapportProvider extends ChangeNotifier{
     
     room.elements.removeWhere((e) => e.elementID == elementId);
     
-    Property? propertyUpdated = getPropertyByRoomId(roomId);
+    Rapport? propertyUpdated = getPropertyByRoomId(roomId);
     if (propertyUpdated != null) {
       updateRapportGlobal(propertyUpdated);
     }
@@ -246,7 +246,7 @@ class RapportProvider extends ChangeNotifier{
     roomToCheck.statut == EtatsElement.aReparer ? newEtat=EtatsElement.ok:newEtat=EtatsElement.aReparer;
 
     for (int i = 0; i < _properties.length; i++) {
-    var rapport = _properties[i] as Rapport;
+    var rapport = _properties[i];
     int roomIndex = rapport.roomList.indexWhere((r) => r.roomId == roomToCheck.roomId);
 
       if (roomIndex != -1) {
@@ -261,7 +261,7 @@ class RapportProvider extends ChangeNotifier{
         // Replace the old Room object with the new one in the master list
         rapport.roomList[roomIndex] = newRoom;
       
-      Property? propertyUpdated = getPropertyByRoomId(newRoom.roomId);
+      Rapport? propertyUpdated = getPropertyByRoomId(newRoom.roomId);
       if (propertyUpdated != null) {
         updateRapportGlobal(propertyUpdated);
       }

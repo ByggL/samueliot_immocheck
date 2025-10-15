@@ -55,12 +55,14 @@ class _ReportPageState extends State<ReportPage> {
     return Scaffold(
       appBar: AppBar(title: Text("Rapport: ${rapport.nom}")),
 
-      body: SingleChildScrollView(
+      body: 
+      SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
 
           children: [
+
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
 
@@ -172,7 +174,7 @@ class _ReportPageState extends State<ReportPage> {
               ),
             ),
             IconButton(
-              onPressed: (){
+              onPressed: context.read<RapportProvider>().getPropertyByRoomId(room.roomId)?.statutRapport == EtatsRapport.termine? null: (){
                 context.read<RapportProvider>().changeRoomStatus(room);
                 setState(() {});
               } ,
@@ -180,7 +182,7 @@ class _ReportPageState extends State<ReportPage> {
             ),
             IconButton(
               icon: const Icon(Icons.delete, color: Colors.redAccent, size: 20),
-              onPressed: () {
+              onPressed: context.read<RapportProvider>().getPropertyByRoomId(room.roomId)?.statutRapport == EtatsRapport.termine? null:() {
                 context.read<RapportProvider>().deleteRoomFromRapport(
                   widget.rapport.propertyId, 
                   room.roomId,
@@ -212,11 +214,12 @@ class _ReportPageState extends State<ReportPage> {
   }
 
   Widget _buildRoomElementCard(BuildContext context, Room room, RoomElement element) {
-    return ListTile(
+    return
+    ListTile(
       leading: const Icon(Icons.home_repair_service),
       title: Text("Element: ${roomElementString(element.elementName)}"),
       subtitle:Text("Statut: ${etatElementString(element.statut)}"),
-      onTap: (){
+      onTap: context.read<RapportProvider>().getPropertyByRoomId(room.roomId)?.statutRapport == EtatsRapport.termine? null: (){
         Navigator.push(
           context,
           ElementInspectionFormPage.route(element, room),
@@ -233,7 +236,7 @@ class _ReportPageState extends State<ReportPage> {
 
               IconButton(
                 icon: const Icon(Icons.delete, color: Colors.red),
-                onPressed: () {
+                onPressed: context.read<RapportProvider>().getPropertyByRoomId(room.roomId)?.statutRapport == EtatsRapport.termine? null: () {
                   context.read<RapportProvider>().deleteElementFromRoom(
                     room.roomId,
                     element.elementID,

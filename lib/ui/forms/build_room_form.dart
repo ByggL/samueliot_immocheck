@@ -83,7 +83,6 @@ class _RoomCreationForm extends State<RoomCreationForm> {
                     roomId: Uuid().v4(),
                     roomName: _nameController,
                     statut: _selectedStatus!,
-                    elements: [],
                   );
                   widget.onSubmit(newRoom);
                 }
