@@ -218,7 +218,6 @@ class _ReportPageState extends State<ReportPage> {
     // that the file has been saved and its location.
 
   } else {
-    // 4. DESKTOP/OTHER: Fallback to sharing or simple download
     await Printing.sharePdf(bytes: pdfBytes, filename: fileName);
   }
   }
