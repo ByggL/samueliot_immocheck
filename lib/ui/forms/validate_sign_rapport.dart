@@ -56,7 +56,7 @@ class _ValidateSignRapportPageState extends State<ValidateSignRapportPage> {
 
   @override
   Widget build(BuildContext context) {
-    final report = context.watch<RapportProvider>().getRapportById(widget.reportData.propertyId) ?? widget.reportData;
+    final report = widget.reportData;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Validation du rapport'),

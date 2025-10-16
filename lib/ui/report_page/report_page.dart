@@ -1,6 +1,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'dart:convert';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
+
+import 'package:share_plus/share_plus.dart';
 import 'package:samueliot_immocheck/data/enums.dart';
 import 'package:samueliot_immocheck/providers/element_provider.dart';
 import 'package:samueliot_immocheck/providers/piece_provider.dart';
@@ -50,6 +55,28 @@ class _ReportPageState extends State<ReportPage> {
     );
   }
 
+  void _exportJson(Rapport rapport) {
+    final jsonString = jsonEncode(rapport.toJson());
+    // You can use Share.share(jsonString) to share, or write to a file using dart:io
+    SharePlus.instance.share(ShareParams(text:jsonString));
+  }
+
+  Future<void> _exportPdf(Rapport rapport) async {
+    final pdf = pw.Document();
+    pdf.addPage(
+      pw.Page(
+        build: (context) => pw.Column(
+          children: [
+            pw.Text('Rapport: ${rapport.nom}'),
+            pw.Text('Adresse: ${rapport.adresse}'),
+            // Add more fields and formatting as needed
+          ],
+        ),
+      ),
+    );
+    await Printing.sharePdf(bytes: await pdf.save(), filename: 'Rapport_${rapport.nom}.pdf');
+    }
+
   @override
   Widget build(BuildContext context) {
     final rapport = context.watch<RapportProvider>().getRapportById(widget.rapport.propertyId) ?? widget.rapport;
@@ -64,93 +91,122 @@ class _ReportPageState extends State<ReportPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
 
           children: [
-
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-
+            Row(
+              spacing: 50,
               children: [
-                Card(
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
 
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                  children: [
+                    Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
 
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          rapport.nom,
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
 
-                        const SizedBox(height: 8),
-                        Text("Adresse: ${rapport.adresse}"),
-
-                        Text("Type: ${propertyString(rapport.propertyType)}"),
-
-                        Text(
-                          "Statut du rapport: ${etatRapportString(rapport.statutRapport)}",
-                        ),
-
-                        Text(
-                          "Créé le: ${DateFormat('yyyy-MM-dd – kk:mm').format(rapport.creationDate)}",
-                        ),
-
-                      ],
-                    ),
-                  ),
-                ),
-                rapport.statutRapport==EtatsRapport.termine?
-                Text("Rapport déjà validé"):
-                ElevatedButton.icon(
-                  onPressed: (){
-                    Navigator.push<bool>(context,ValidateSignRapportPage.route(rapport))
-                      .then((result) {
-                        if (result == true) {setState(() {});};
-                        }
-                      );
-                  }, 
-                  icon: Icon(Icons.check),
-                  label: Text("Valider le rapport",maxLines: 3,)
-                ),
-                if (rapport.statutRapport == EtatsRapport.termine)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 12),
-                      Text("Signatures du rapport:", style: TextStyle(fontWeight: FontWeight.bold)),
-                      ...rapport.signature.asMap().entries.map((entry) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: entry.value != null && entry.value!.isNotEmpty
-                          ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("Signature ${entry.key + 1 == 1? "locataire":"propriétaire"} :"),
-                                Container(
-                                  height: 120,
-                                  width: 300,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.grey),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Image.memory(entry.value!, fit: BoxFit.contain),
-                                ),
-                              ],
-                            )
-                          : Row(
-                              children: [
-                                Text("Signature ${entry.key + 1}: "),
-                                Icon(Icons.close, color: Colors.red),
-                              ],
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              rapport.nom,
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                      )),
+
+                            const SizedBox(height: 8),
+                            Text("Adresse: ${rapport.adresse}"),
+
+                            Text("Type: ${propertyString(rapport.propertyType)}"),
+
+                            Text(
+                              "Statut du rapport: ${etatRapportString(rapport.statutRapport)}",
+                            ),
+
+                            Text(
+                              "Créé le: ${DateFormat('yyyy-MM-dd – kk:mm').format(rapport.creationDate)}",
+                            ),
+
+                          ],
+                        ),
+                      ),
+                    ),
+                    rapport.statutRapport==EtatsRapport.termine?
+                    Text("Rapport déjà validé"):
+                    ElevatedButton.icon(
+                      onPressed: (){
+                        Navigator.push<bool>(context,ValidateSignRapportPage.route(rapport))
+                          .then((result) {
+                            if (result == true) {setState(() {});};
+                            }
+                          );
+                      }, 
+                      icon: Icon(Icons.check),
+                      label: Text("Valider le rapport",maxLines: 3,)
+                    ),
+                    if (rapport.statutRapport == EtatsRapport.termine)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 12),
+                          Text("Signatures du rapport:", style: TextStyle(fontWeight: FontWeight.bold)),
+                          ...rapport.signature.asMap().entries.map((entry) => Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: entry.value != null && entry.value!.isNotEmpty
+                              ? Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text("Signature ${entry.key + 1 == 1? "locataire":"propriétaire"} :"),
+                                    Container(
+                                      height: 120,
+                                      width: 300,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.grey),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Image.memory(entry.value!, fit: BoxFit.contain),
+                                    ),
+                                  ],
+                                )
+                              : Row(
+                                  children: [
+                                    Text("Signature ${entry.key + 1}: "),
+                                    Icon(Icons.close, color: Colors.red),
+                                  ],
+                                ),
+                          )),
+                        ],
+                      ),
                     ],
                   ),
+                Column(
+                  children: [
+                  context.read<RapportProvider>().getPropertyById(rapport.propertyId)?.statutRapport == EtatsRapport.termine?
+                  Column(
+                    spacing: 20,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          _exportPdf(rapport);
+                        },
+                        icon: const Icon(Icons.picture_as_pdf),
+                        label: const Text("Exporter le rapport en PDF"),
+                      ),
+                      ElevatedButton.icon(
+                        onPressed: (){
+                          _exportJson(rapport);
+                        },
+                        icon: const Icon(Icons.file_copy),
+                        label: const Text("Exporter le rapport en JSON"),
+                        ),
+                  ],
+                  )
+                  :Text(" ")
+                ],
+                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -169,7 +225,7 @@ class _ReportPageState extends State<ReportPage> {
 
             // ➕ Add Room Button at bottom
             rapport.statutRapport==EtatsRapport.termine?
-            Text("Rapport déjà validé, impossible d'ajouter des pièces"):
+            Text("Rapport déjà validé, impossible de le modifier"):
             Center(
               child: ElevatedButton.icon(
                 onPressed: () => _openAddRoomForm(context),
@@ -234,7 +290,7 @@ class _ReportPageState extends State<ReportPage> {
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Center(
               child: TextButton.icon(
-                onPressed: () {
+                onPressed: context.read<RapportProvider>().getPropertyByRoomId(room.roomId)?.statutRapport == EtatsRapport.termine? null: () {
                   Navigator.push(context, ElementInspectionFormPage.route(null, room)).then((_) {setState(() {});});
                 },
                 icon: const Icon(Icons.add_circle_outline),
