@@ -67,159 +67,169 @@ class _ReportPageState extends State<ReportPage> {
     SharePlus.instance.share(ShareParams(text:jsonString));
   }
 
-  Future<void> _exportPdf(Rapport rapport) async {
-    final pdf = pw.Document();
-    pdf.addPage(
-      pw.MultiPage(
-        build: (context) {
-          List<pw.Widget> widgets = [];
+    Future<void> _generateAndSharePdf(Rapport rapport) async {
+    final doc = pw.Document(title: 'Rapport: ${rapport.nom}');
+    final font = await PdfGoogleFonts.openSansRegular();
 
+    print('Starting PDF generation...');
+
+    // 1. Add cover page with signatures and main info (synchronous content)
+    doc.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) {
+          List<pw.Widget> widgets = [];
+          
           // Signatures at the top
-          widgets.add(pw.Text('Signatures', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)));
-          for (int i = 0; i < rapport.signature.length; i++) {
-            final sig = rapport.signature[i];
-            if (sig != null && sig.isNotEmpty) {
-              widgets.add(pw.Text('Signature ${i + 1 == 1 ? "locataire" : "propriétaire"}'));
-              widgets.add(pw.Container(
-                height: 60,
-                width: 200,
-                decoration: pw.BoxDecoration(border: pw.Border.all(color: PdfColor.fromRYB(255,0,0,0.5))),
-                child: pw.Image(pw.MemoryImage(sig)),
-              ));
-            }
-          }
+          widgets.add(pw.Text('Signatures', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, font: font)));
+          // Assuming the signature is stored as a base64 encoded string or Uint8List in widget.rapport.signature
+          // Since the data structure is unknown, let's stick to the simple text representation for the cover.
+          widgets.add(pw.Text('Signature: ${rapport.signature}', style: pw.TextStyle(font: font)));
           widgets.add(pw.SizedBox(height: 16));
 
           // Main info section
-          widgets.add(pw.Text('Informations principales', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)));
-          widgets.add(pw.Text('Nom: ${rapport.nom}'));
-          widgets.add(pw.Text('Adresse: ${rapport.adresse}'));
-          widgets.add(pw.Text('Type: ${propertyString(rapport.propertyType)}'));
-          widgets.add(pw.Text('Statut du rapport: ${etatRapportString(rapport.statutRapport)}'));
-          widgets.add(pw.Text('Créé le: ${DateFormat('yyyy-MM-dd - kk:mm').format(rapport.creationDate)}'));
+          widgets.add(pw.Text('Informations principales', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, font: font)));
+          widgets.add(pw.Text('Nom: ${rapport.nom}', style: pw.TextStyle(font: font)));
+          widgets.add(pw.Text('Adresse: ${rapport.adresse}', style: pw.TextStyle(font: font)));
+          widgets.add(pw.Text('Type: ${propertyString(rapport.propertyType)}', style: pw.TextStyle(font: font)));
+          widgets.add(pw.Text('Statut du rapport: ${etatRapportString(rapport.statutRapport)}', style: pw.TextStyle(font: font)));
+          widgets.add(pw.Text('Créé le: ${DateFormat('yyyy-MM-dd - kk:mm').format(rapport.creationDate)}', style: pw.TextStyle(font: font)));
           widgets.add(pw.SizedBox(height: 16));
-
-          // Rooms section
-          widgets.add(pw.Text('Pièces du bien', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)));
+          
+          // Rooms summary section on the cover
+          widgets.add(pw.Text('Sommaire des pièces', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, font: font)));
           for (final room in rapport.roomList) {
-            widgets.add(pw.SizedBox(height: 8));
-            widgets.add(pw.Text('- ${roomTypeString(room.roomName)} ', style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)));
-            widgets.add(pw.Text('  Statut: ${etatElementString(room.statut)}'));
-            widgets.add(pw.Text('  Nombre d\'éléments: ${room.elements.length}'));
-
-            for (final element in room.elements) {
-              widgets.add(pw.SizedBox(height: 4));
-              widgets.add(pw.Text('    - ${roomElementString(element.elementName)}', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)));
-              widgets.add(pw.Text('      Statut: ${etatElementString(element.statut)}'));
-              widgets.add(pw.Text('      Commentaire: ${element.commentaire}'));
-              if (element.elementPicture.isNotEmpty) {
-                widgets.add(pw.Text('      Photos (${element.elementPicture.length}):'));
-                
-                // Use a Wrap or Row/Column structure to display the images
-                widgets.add(
-                  pw.Wrap(
-                    spacing: 10.0, // horizontal space between images
-                    runSpacing: 10.0, // vertical space between rows of images
-                    alignment: pw.WrapAlignment.start,
-                    children: element.elementPicture.asMap().entries.map((entry) {
-                      final index = entry.key;
-                      final imageData = entry.value; // Assuming Uint8List
-                      
-                      if (imageData.isNotEmpty) {
-                        return pw.Column(
-                          crossAxisAlignment: pw.CrossAxisAlignment.start,
-                          children: [
-                            pw.Container(
-                              width: 150, // Set a fixed width for the image
-                              height: 100, // Set a fixed height for the image
-                              child: pw.Image(
-                                pw.MemoryImage(imageData),
-                                fit: pw.BoxFit.cover, // Ensures the image covers the container
-                              ),
-                              decoration: pw.BoxDecoration(
-                                border: pw.Border.all(color: PdfColors.grey500),
-                              ),
-                            ),
-                            pw.Text('Photo ${index + 1}', style: pw.TextStyle(fontSize: 8)),
-                          ],
-                        );
-                      }
-                      return pw.SizedBox.shrink();
-                    }).toList(),
-                  ),
-                );
-                widgets.add(pw.SizedBox(height: 8)); // Space after the pictures
-              } else {
-                widgets.add(pw.Text('      Aucune photo.'));
-              }
-            }
-          }
-
-          widgets.add(pw.SizedBox(height: 24));
-          // Signatures at the end
-          widgets.add(pw.Text('Signatures (rappel)', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)));
-          for (int i = 0; i < rapport.signature.length; i++) {
-            final sig = rapport.signature[i];
-            if (sig != null && sig.isNotEmpty) {
-              widgets.add(pw.Text('Signature ${i + 1 == 1 ? "locataire" : "propriétaire"}'));
-              widgets.add(pw.Container(
-                height: 60,
-                width: 200,
-                decoration: pw.BoxDecoration(border: pw.Border.all(color: PdfColor.fromInt(0xFF888888))),
-                child: pw.Image(pw.MemoryImage(sig)),
-              ));
-            }
+            widgets.add(pw.Text('- ${room.roomName} (${room.elements.length} éléments)', style: pw.TextStyle(font: font)));
           }
 
           return widgets;
         },
       ),
     );
-    // 1. Get the PDF bytes
-  final Uint8List pdfBytes = await pdf.save();
-  final String fileName = 'Rapport_${rapport.nom}.pdf';
 
-  if (kIsWeb) {
-    // 2. WEB: Use Printing.js for direct browser download
-    await Printing.sharePdf(bytes: pdfBytes, filename: fileName);
-  } else if (Platform.isAndroid || Platform.isIOS) {
-    // 3. MOBILE: Request permission and save to a public directory
 
-    // Check for storage permission
-    final status = await Permission.storage.request();
-    if (!status.isGranted) {
-      // Handle denied permission (e.g., show a dialog or SnackBar)
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Storage permission denied. Cannot save file.")),
-      );
-      // You may still want to try sharing if saving fails, but alert the user.
+    // 2. Add detailed pages for each element with ASYNCHRONOUS image loading
+    for (final room in rapport.roomList) {
+      for (final element in room.elements) {
+        final List<pw.Widget> imageWidgets = [];
+
+        // Check if elementPicture contains image paths (as XFile.path Strings)
+        if (element.elementPicture.isNotEmpty) {
+          
+          print('Processing ${element.elementPicture.length} images for ${element.elementName.name}');
+
+          // CRITICAL: Iterate through picture paths and load bytes ASYNCHRONOUSLY
+          for (final dynamic picturePath in element.elementPicture) {
+            if (picturePath is String) {
+              try {
+                // Read the file from the local path into bytes
+                final File file = File(picturePath);
+                final Uint8List imageBytes = await file.readAsBytes();
+                
+                // Add the image bytes to the list of PDF widgets
+                imageWidgets.add(
+                  pw.Padding(
+                    padding: const pw.EdgeInsets.symmetric(vertical: 8),
+                    child: pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        pw.Text(
+                          'Photo pour ${element.elementName.name} (Statut: ${element.statut.name})',
+                          style: pw.TextStyle(font: font, fontSize: 10),
+                        ),
+                        pw.Image(
+                          pw.MemoryImage(imageBytes),
+                          width: 200, // Adjust size as needed
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              } catch (e) {
+                // This catch block handles failed reads (e.g., file moved/deleted)
+                print('Error loading image at path $picturePath: $e');
+                imageWidgets.add(
+                  pw.Text('Erreur: Image indisponible à ce chemin.', style: pw.TextStyle(color: PdfColors.red, font: font)),
+                );
+              }
+            }
+          }
+        }
+
+        // Add a new page for each detailed element report
+        doc.addPage(
+          pw.Page(
+            pageFormat: PdfPageFormat.a4,
+            build: (pw.Context context) {
+              return pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Text(
+                    'Pièce: ${room.roomName} - Élément: ${element.elementName.name}',
+                    style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, font: font),
+                  ),
+                  pw.SizedBox(height: 10),
+                  pw.Text('Statut: ${etatElementString(element.statut)}', style: pw.TextStyle(font: font)),
+                  pw.Text('Commentaire: ${element.commentaire}', style: pw.TextStyle(font: font)),
+                  pw.SizedBox(height: 15),
+                  
+                  // Insert the asynchronously loaded image widgets
+                  ...imageWidgets,
+                ],
+              );
+            },
+          ),
+        );
+      }
+    }
+
+
+    // 3. Save the PDF bytes
+    final Uint8List pdfBytes = await doc.save();
+    final String fileName = 'Rapport_${rapport.nom}_${DateFormat('yyyyMMdd').format(DateTime.now())}.pdf';
+
+    // 4. Handle sharing/saving based on platform (using logic from your sample function)
+    if (kIsWeb) {
+      // WEB: Use Printing.js for direct browser download
       await Printing.sharePdf(bytes: pdfBytes, filename: fileName);
-      return; 
-    }
+    } else if (Platform.isAndroid || Platform.isIOS) {
+      // MOBILE: Request permission and save to a public directory
 
-    // Get the directory to save the file
-    final Directory? directory = Platform.isAndroid
-        ? await getExternalStorageDirectory() // Often a good place for user files on Android
-        : await getApplicationDocumentsDirectory(); // Standard on iOS
+      // Check for storage permission
+      final status = await Permission.storage.request();
+      if (!status.isGranted) {
+        // Handle denied permission (e.g., show a dialog or SnackBar)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Storage permission denied. Cannot save file.")),
+        );
+        // Fallback to sharing directly
+        await Printing.sharePdf(bytes: pdfBytes, filename: fileName);
+        return; 
+      }
 
-    if (directory == null) {
+      // Get the directory to save the file
+      final Directory? directory = Platform.isAndroid
+          ? await getExternalStorageDirectory() // Often a good place for user files on Android
+          : await getApplicationDocumentsDirectory(); // Standard on iOS
+
+      if (directory == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Could not get a save directory.")),
+        );
+        return;
+      }
+
+      final File file = File('${directory.path}/$fileName');
+      await file.writeAsBytes(pdfBytes);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Could not get a save directory.")),
+        SnackBar(content: Text('PDF saved successfully to ${file.path}')),
       );
-      return;
+    } else {
+      // Desktop fallback
+      await Printing.sharePdf(bytes: pdfBytes, filename: fileName);
     }
-
-    final File file = File('${directory.path}/$fileName');
-    await file.writeAsBytes(pdfBytes);
-    ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('PDF saved successfully ')),
-      );
-    // OPTIONAL: Notify the user with a platform-specific mechanism 
-    // that the file has been saved and its location.
-
-  } else {
-    await Printing.sharePdf(bytes: pdfBytes, filename: fileName);
-  }
+    
+    print('PDF sharing/saving complete.');
   }
 
   @override
@@ -297,7 +307,7 @@ class _ReportPageState extends State<ReportPage> {
                   children: [
                     ElevatedButton.icon(
                       onPressed: () {
-                        _exportPdf(rapport);
+                        _generateAndSharePdf(rapport);
                       },
                       icon: const Icon(Icons.picture_as_pdf),
                       label: const Text("Exporter le rapport en PDF"),
