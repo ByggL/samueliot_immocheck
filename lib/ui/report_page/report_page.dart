@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pdf/pdf.dart';
 import 'dart:convert';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -64,18 +65,113 @@ class _ReportPageState extends State<ReportPage> {
   Future<void> _exportPdf(Rapport rapport) async {
     final pdf = pw.Document();
     pdf.addPage(
-      pw.Page(
-        build: (context) => pw.Column(
-          children: [
-            pw.Text('Rapport: ${rapport.nom}'),
-            pw.Text('Adresse: ${rapport.adresse}'),
-            // Add more fields and formatting as needed
-          ],
-        ),
+      pw.MultiPage(
+        build: (context) {
+          List<pw.Widget> widgets = [];
+
+          // Signatures at the top
+          widgets.add(pw.Text('Signatures', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)));
+          for (int i = 0; i < rapport.signature.length; i++) {
+            final sig = rapport.signature[i];
+            if (sig != null && sig.isNotEmpty) {
+              widgets.add(pw.Text('Signature ${i + 1 == 1 ? "locataire" : "propriétaire"}'));
+              widgets.add(pw.Container(
+                height: 60,
+                width: 200,
+                decoration: pw.BoxDecoration(border: pw.Border.all(color: PdfColor.fromInt(0xFF888888))),
+                child: pw.Image(pw.MemoryImage(sig)),
+              ));
+            }
+          }
+          widgets.add(pw.SizedBox(height: 16));
+
+          // Main info section
+          widgets.add(pw.Text('Informations principales', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)));
+          widgets.add(pw.Text('Nom: ${rapport.nom}'));
+          widgets.add(pw.Text('Adresse: ${rapport.adresse}'));
+          widgets.add(pw.Text('Type: ${propertyString(rapport.propertyType)}'));
+          widgets.add(pw.Text('Statut du rapport: ${etatRapportString(rapport.statutRapport)}'));
+          widgets.add(pw.Text('Créé le: ${DateFormat('yyyy-MM-dd - kk:mm').format(rapport.creationDate)}'));
+          widgets.add(pw.SizedBox(height: 16));
+
+          // Rooms section
+          widgets.add(pw.Text('Pièces du bien', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)));
+          for (final room in rapport.roomList) {
+            widgets.add(pw.SizedBox(height: 8));
+            widgets.add(pw.Text('- ${roomTypeString(room.roomName)} ', style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)));
+            widgets.add(pw.Text('  Statut: ${etatElementString(room.statut)}'));
+            widgets.add(pw.Text('  Nombre d\'éléments: ${room.elements.length}'));
+
+            for (final element in room.elements) {
+              widgets.add(pw.SizedBox(height: 4));
+              widgets.add(pw.Text('    - ${roomElementString(element.elementName)}', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)));
+              widgets.add(pw.Text('      Statut: ${etatElementString(element.statut)}'));
+              widgets.add(pw.Text('      Commentaire: ${element.commentaire}'));
+              if (element.elementPicture.isNotEmpty) {
+                widgets.add(pw.Text('      Photos (${element.elementPicture.length}):'));
+                
+                // Use a Wrap or Row/Column structure to display the images
+                widgets.add(
+                  pw.Wrap(
+                    spacing: 10.0, // horizontal space between images
+                    runSpacing: 10.0, // vertical space between rows of images
+                    alignment: pw.WrapAlignment.start,
+                    children: element.elementPicture.asMap().entries.map((entry) {
+                      final index = entry.key;
+                      final imageData = entry.value; // Assuming Uint8List
+                      
+                      if (imageData.isNotEmpty) {
+                        return pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.start,
+                          children: [
+                            pw.Container(
+                              width: 150, // Set a fixed width for the image
+                              height: 100, // Set a fixed height for the image
+                              child: pw.Image(
+                                pw.MemoryImage(imageData),
+                                fit: pw.BoxFit.cover, // Ensures the image covers the container
+                              ),
+                              decoration: pw.BoxDecoration(
+                                border: pw.Border.all(color: PdfColors.grey500),
+                              ),
+                            ),
+                            pw.Text('Photo ${index + 1}', style: pw.TextStyle(fontSize: 8)),
+                          ],
+                        );
+                      }
+                      return pw.SizedBox.shrink();
+                    }).toList(),
+                  ),
+                );
+                widgets.add(pw.SizedBox(height: 8)); // Space after the pictures
+              } else {
+                widgets.add(pw.Text('      Aucune photo.'));
+              }
+            }
+          }
+
+          widgets.add(pw.SizedBox(height: 24));
+          // Signatures at the end
+          widgets.add(pw.Text('Signatures (rappel)', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)));
+          for (int i = 0; i < rapport.signature.length; i++) {
+            final sig = rapport.signature[i];
+            if (sig != null && sig.isNotEmpty) {
+              widgets.add(pw.Text('Signature ${i + 1 == 1 ? "locataire" : "propriétaire"}'));
+              widgets.add(pw.Container(
+                height: 60,
+                width: 200,
+                decoration: pw.BoxDecoration(border: pw.Border.all(color: PdfColor.fromInt(0xFF888888))),
+                child: pw.Image(pw.MemoryImage(sig)),
+              ));
+            }
+          }
+
+          return widgets;
+        },
       ),
     );
     await Printing.sharePdf(bytes: await pdf.save(), filename: 'Rapport_${rapport.nom}.pdf');
-    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -140,6 +236,7 @@ class _ReportPageState extends State<ReportPage> {
                       onPressed: (){
                         Navigator.push<bool>(context,ValidateSignRapportPage.route(rapport))
                           .then((result) {
+                            // ignore: empty_statements
                             if (result == true) {setState(() {});};
                             }
                           );
