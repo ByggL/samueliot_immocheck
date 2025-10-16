@@ -1,6 +1,6 @@
 
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:samueliot_immocheck/data/enums.dart';
 import 'package:samueliot_immocheck/providers/element_provider.dart';
 import 'package:samueliot_immocheck/providers/property_provider.dart';
@@ -10,7 +10,7 @@ import 'dart:convert';
 
 class Rapport extends Property {
   final EtatsRapport statutRapport;
-  final String signature;
+  final List<Uint8List?> signature;
   final DateTime creationDate;
 
   Rapport({
@@ -33,8 +33,8 @@ class Rapport extends Property {
     'roomList': roomList.map((r) => r.toJson()).toList(),
     'propertyType': propertyType.index,
     'statutRapport': statutRapport.index,
-    'signature': signature,
-  };
+    'signature': signature.map((s) => base64Encode(s!)).toList(),
+    };
 
   factory Rapport.fromJson(Map<String, dynamic> json) => Rapport(
     nom: json['nom'],
@@ -44,9 +44,9 @@ class Rapport extends Property {
     propertyId: json['propertyId'],
     creationDate: DateTime.parse(json['creationDate']),
     statutRapport: EtatsRapport.values[json['statutRapport']],
-    signature: json['signature'],
-  );
-}
+    signature: (json['signature'] as List).map((s) => Uint8List.fromList(base64Decode(s))).toList(),
+    );
+  }
 
 class RapportProvider extends ChangeNotifier{
   final _storage = FlutterSecureStorage();
@@ -128,7 +128,7 @@ class RapportProvider extends ChangeNotifier{
     }
   }
 
-  void validateRapport(Rapport report){
+  void validateRapport(Rapport report, List<Uint8List?> signatures){
     EtatsRapport newEtat ;
     report.statutRapport == EtatsRapport.enCours ? newEtat=EtatsRapport.termine:newEtat=EtatsRapport.enCours;
 
@@ -143,12 +143,11 @@ class RapportProvider extends ChangeNotifier{
         roomList: report.roomList,
         propertyType: report.propertyType,
         creationDate: report.creationDate,
-        signature: report.signature,
+        signature: signatures,
         statutRapport: newEtat, 
       );
 
       _properties[index] = newRapport;
-
       notifyListeners();
       saveRapports();
     }

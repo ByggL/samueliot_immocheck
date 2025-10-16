@@ -20,7 +20,7 @@ class Room {
   }) : elements = elements ?? Room.defaultElementsForRoomType(roomName, roomId);
 
 static List<RoomElement> defaultElementsForRoomType(RoomTypes type, String roomId) {
-    print(type);
+    // print(type);
     // Helper to create a RoomElement with minimal info
     RoomElement makeElement(RoomElements el) => RoomElement(
       elementID: '${roomId}_${el.name}',

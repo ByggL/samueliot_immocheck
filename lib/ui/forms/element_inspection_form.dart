@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:samueliot_immocheck/data/enums.dart';
@@ -113,6 +115,7 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
 
   @override
   Widget build(BuildContext context) {
+  final bool isViewOnly = context.read<RapportProvider>().getPropertyByRoomId(widget.roomToAddTo!.roomId)?.statutRapport == EtatsRapport.termine;
     return Scaffold(
       appBar: AppBar(title: Text('Element Inspection')),
       body: Padding(
@@ -125,7 +128,8 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
                 decoration: InputDecoration(labelText: 'Comment (optional)'),
                 initialValue: _comment,
                 maxLines: 3,
-                onSaved: (value) => _comment = value ?? '',
+                enabled: !isViewOnly,
+                onSaved: isViewOnly ? null : (value) => _comment = value ?? '',
               ),
               SizedBox(height: 16),
               DropdownButtonFormField<RoomElements>(
@@ -138,7 +142,7 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
                         child: Text(roomElementString( element)),
                       );
                     }).toList(),
-                onChanged: (value) => setState(() => _elementName = value!),
+                onChanged: isViewOnly ? null : (value) => setState(() => _elementName = value!),
                 validator:
                     (value) => value == null ? 'Please select a room element' : null,
               ),
@@ -153,7 +157,7 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
                         child: Text(etatElementString(status)),
                       );
                     }).toList(),
-                onChanged: (value) => setState(() => _status = value!),
+                onChanged: isViewOnly ? null : (value) => setState(() => _status = value!),
                 validator:
                     (value) => value == null ? 'Please select a status' : null,
               ),
@@ -174,22 +178,23 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
                           height: 80,
                           child: Image.file(File(img.path), fit: BoxFit.cover),
                         ),
-                        GestureDetector(
-                          onTap: () => _removeImage(idx),
-                          child: CircleAvatar(
-                            radius: 12,
-                            backgroundColor: Colors.red,
-                            child: Icon(
-                              Icons.close,
-                              size: 16,
-                              color: Colors.white,
+                        if (!isViewOnly)
+                          GestureDetector(
+                            onTap: () => _removeImage(idx),
+                            child: CircleAvatar(
+                              radius: 12,
+                              backgroundColor: Colors.red,
+                              child: Icon(
+                                Icons.close,
+                                size: 16,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
-                        ),
                       ],
                     );
                   }),
-                  if (_images.length < 3)
+                  if (_images.length < 3 && !isViewOnly)
                     Padding(
                       padding: const EdgeInsets.only(left: 8),
                       child: FloatingActionButton(
@@ -237,7 +242,8 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
                 ],
               ),
               SizedBox(height: 24),
-              ElevatedButton(onPressed: _submit, child: Text('Submit')),
+              if (!isViewOnly)
+                ElevatedButton(onPressed: _submit, child: Text('Submit')),
             ],
           ),
         ),

@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:samueliot_immocheck/data/enums.dart';
@@ -5,8 +6,9 @@ import 'package:samueliot_immocheck/providers/element_provider.dart';
 import 'package:samueliot_immocheck/providers/piece_provider.dart';
 import 'package:samueliot_immocheck/providers/rapport_provider.dart';
 import 'package:samueliot_immocheck/ui/forms/build_room_form.dart';
-import 'package:samueliot_immocheck/ui/homepage/element_inspection_form.dart';
+import 'package:samueliot_immocheck/ui/forms/element_inspection_form.dart';
 import 'package:provider/provider.dart';
+import 'package:samueliot_immocheck/ui/forms/validate_sign_rapport.dart';
 
 
 class ReportPage extends StatefulWidget {
@@ -50,7 +52,7 @@ class _ReportPageState extends State<ReportPage> {
 
   @override
   Widget build(BuildContext context) {
-    final rapport = widget.rapport;
+    final rapport = context.watch<RapportProvider>().getRapportById(widget.rapport.propertyId) ?? widget.rapport;
 
     return Scaffold(
       appBar: AppBar(title: Text("Rapport: ${rapport.nom}")),
@@ -99,8 +101,6 @@ class _ReportPageState extends State<ReportPage> {
                           "Créé le: ${DateFormat('yyyy-MM-dd – kk:mm').format(rapport.creationDate)}",
                         ),
 
-                        const SizedBox(height: 8),
-                        Text("Signature: ${rapport.signature}"),
                       ],
                     ),
                   ),
@@ -109,14 +109,48 @@ class _ReportPageState extends State<ReportPage> {
                 Text("Rapport déjà validé"):
                 ElevatedButton.icon(
                   onPressed: (){
-                    context.read<RapportProvider>().validateRapport(rapport);
-                    Navigator.pop(context);
-                    setState((){});
+                    Navigator.push<bool>(context,ValidateSignRapportPage.route(rapport))
+                      .then((result) {
+                        if (result == true) {setState(() {});};
+                        }
+                      );
                   }, 
                   icon: Icon(Icons.check),
                   label: Text("Valider le rapport",maxLines: 3,)
                 ),
-
+                if (rapport.statutRapport == EtatsRapport.termine)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 12),
+                      Text("Signatures du rapport:", style: TextStyle(fontWeight: FontWeight.bold)),
+                      ...rapport.signature.asMap().entries.map((entry) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: entry.value != null && entry.value!.isNotEmpty
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("Signature ${entry.key + 1 == 1? "locataire":"propriétaire"} :"),
+                                Container(
+                                  height: 120,
+                                  width: 300,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Image.memory(entry.value!, fit: BoxFit.contain),
+                                ),
+                              ],
+                            )
+                          : Row(
+                              children: [
+                                Text("Signature ${entry.key + 1}: "),
+                                Icon(Icons.close, color: Colors.red),
+                              ],
+                            ),
+                      )),
+                    ],
+                  ),
               ],
             ),
             const SizedBox(height: 16),
@@ -219,7 +253,7 @@ class _ReportPageState extends State<ReportPage> {
       leading: const Icon(Icons.home_repair_service),
       title: Text("Element: ${roomElementString(element.elementName)}"),
       subtitle:Text("Statut: ${etatElementString(element.statut)}"),
-      onTap: context.read<RapportProvider>().getPropertyByRoomId(room.roomId)?.statutRapport == EtatsRapport.termine? null: (){
+      onTap:  (){
         Navigator.push(
           context,
           ElementInspectionFormPage.route(element, room),

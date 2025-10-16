@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:samueliot_immocheck/data/enums.dart';
 import 'package:samueliot_immocheck/providers/rapport_provider.dart';
@@ -24,10 +26,9 @@ class _BuildRapportFormState extends State<BuildRapportForm> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _adressController = TextEditingController();
-  String _signature = "Oui"; 
   PropertyTypes _propertyType = PropertyTypes.appartement;
   DateTime _selectedDate = DateTime.now();
-  EtatsRapport? _selectedStatus;
+  EtatsRapport? _selectedStatus = EtatsRapport.enCours;
 
   void _pickDate() async {
     final now = DateTime.now();
@@ -54,7 +55,7 @@ class _BuildRapportFormState extends State<BuildRapportForm> {
         propertyId: Uuid().v4(),
         creationDate: _selectedDate,
         statutRapport: _selectedStatus!,
-        signature: _signature ,
+        signature: [] ,
       );
       final rapportProvider = context.read<RapportProvider>();
 
@@ -130,22 +131,22 @@ class _BuildRapportFormState extends State<BuildRapportForm> {
                   validator: (value) =>
                       value == null ? 'Sélectionnez un statut' : null,
                 ),          
-                const SizedBox(height: 24),
-                DropdownButtonFormField<String>(
-                  value: _signature,
-                  items: ['Oui', 'Non']
-                          .map(
-                            (status) => DropdownMenuItem(
-                              value: status,
-                              child: Text(status),
-                            ),
-                          )
-                          .toList(),
-                  decoration: const InputDecoration(labelText: 'Signé ?'),
-                  onChanged: (value) => setState(() => _signature = value!),
-                  validator: (value) =>
-                      value == null ? 'Sélectionnez un statut' : null,
-                ),          
+                // const SizedBox(height: 24),
+                // DropdownButtonFormField<String>(
+                //   value: _signature,
+                //   items: ['Oui', 'Non']
+                //           .map(
+                //             (status) => DropdownMenuItem(
+                //               value: status,
+                //               child: Text(status),
+                //             ),
+                //           )
+                //           .toList(),
+                //   decoration: const InputDecoration(labelText: 'Signé ?'),
+                //   onChanged: (value) => setState(() => _signature = value!),
+                //   validator: (value) =>
+                //       value == null ? 'Sélectionnez un statut' : null,
+                // ),          
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _submit,

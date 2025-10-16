@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:samueliot_immocheck/data/enums.dart';
 import 'package:samueliot_immocheck/providers/piece_provider.dart';
