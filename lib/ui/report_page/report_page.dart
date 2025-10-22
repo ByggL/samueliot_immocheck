@@ -139,7 +139,7 @@ class _ReportPageState extends State<ReportPage> {
                       crossAxisAlignment: pw.CrossAxisAlignment.start,
                       children: [
                         pw.Text(
-                          'Photo pour ${element.elementName.name} (Statut: ${element.statut.name})',
+                          'Photo pour ${roomElementString(element.elementName)} (Statut: ${element.statut.name})',
                           style: pw.TextStyle(font: font, fontSize: 10),
                         ),
                         pw.Image(
@@ -170,7 +170,7 @@ class _ReportPageState extends State<ReportPage> {
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
                   pw.Text(
-                    'Pièce: ${room.roomName} - Élément: ${element.elementName.name}',
+                    'Pièce: ${roomTypeString(room.roomName)} - Élément: ${roomElementString(element.elementName)}',
                     style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, font: font),
                   ),
                   pw.SizedBox(height: 10),
