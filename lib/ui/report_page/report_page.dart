@@ -67,11 +67,13 @@ class _ReportPageState extends State<ReportPage> {
     SharePlus.instance.share(ShareParams(text:jsonString));
   }
 
-    Future<void> _generateAndSharePdf(Rapport rapport) async {
+    
+  Future<void> _generateAndSharePdf(Rapport rapport) async {
+    // print("Hello from PDF generation");
     final doc = pw.Document(title: 'Rapport: ${rapport.nom}');
     final font = await PdfGoogleFonts.openSansRegular();
 
-    print('Starting PDF generation...');
+    // print('Starting PDF generation...');
 
     // 1. Add cover page with signatures and main info (synchronous content)
     doc.addPage(
@@ -82,10 +84,7 @@ class _ReportPageState extends State<ReportPage> {
           
           // Signatures at the top
           widgets.add(pw.Text('Signatures', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, font: font)));
-          // Assuming the signature is stored as a base64 encoded string or Uint8List in widget.rapport.signature
-          // Since the data structure is unknown, let's stick to the simple text representation for the cover.
-          widgets.add(pw.Text('Signature: ${rapport.signature}', style: pw.TextStyle(font: font)));
-          widgets.add(pw.SizedBox(height: 16));
+          // ... (rest of your signature and main info widgets)
 
           // Main info section
           widgets.add(pw.Text('Informations principales', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, font: font)));
@@ -99,10 +98,16 @@ class _ReportPageState extends State<ReportPage> {
           // Rooms summary section on the cover
           widgets.add(pw.Text('Sommaire des pièces', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, font: font)));
           for (final room in rapport.roomList) {
-            widgets.add(pw.Text('- ${room.roomName} (${room.elements.length} éléments)', style: pw.TextStyle(font: font)));
+            widgets.add(pw.Text('- ${roomTypeString(room.roomName)} (${room.elements.length} éléments)', style: pw.TextStyle(font: font)));
           }
 
-          return widgets;
+          // WRAP the list in a pw.Column to enable content flow and page breaks
+          return [
+            pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: widgets,
+            ),
+          ];
         },
       ),
     );
@@ -116,7 +121,7 @@ class _ReportPageState extends State<ReportPage> {
         // Check if elementPicture contains image paths (as XFile.path Strings)
         if (element.elementPicture.isNotEmpty) {
           
-          print('Processing ${element.elementPicture.length} images for ${element.elementName.name}');
+          // print('Processing ${element.elementPicture.length} images for ${element.elementName.name}');
 
           // CRITICAL: Iterate through picture paths and load bytes ASYNCHRONOUSLY
           for (final dynamic picturePath in element.elementPicture) {
@@ -147,7 +152,7 @@ class _ReportPageState extends State<ReportPage> {
                 );
               } catch (e) {
                 // This catch block handles failed reads (e.g., file moved/deleted)
-                print('Error loading image at path $picturePath: $e');
+                // print('Error loading image at path $picturePath: $e');
                 imageWidgets.add(
                   pw.Text('Erreur: Image indisponible à ce chemin.', style: pw.TextStyle(color: PdfColors.red, font: font)),
                 );
@@ -229,7 +234,7 @@ class _ReportPageState extends State<ReportPage> {
       await Printing.sharePdf(bytes: pdfBytes, filename: fileName);
     }
     
-    print('PDF sharing/saving complete.');
+    // print('PDF sharing/saving complete.');
   }
 
   @override
@@ -363,7 +368,7 @@ class _ReportPageState extends State<ReportPage> {
           ...rapport.signature.asMap().entries.map((entry) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               // Use an if collection-element to conditionally include the widget.
-              child: (entry.value != null && entry.value!.isNotEmpty) // <-- FIX HERE
+              child: (entry.value != null && entry.value!.isNotEmpty) 
                 ? Column( // Value if true
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
