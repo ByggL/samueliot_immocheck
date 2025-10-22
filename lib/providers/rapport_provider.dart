@@ -49,6 +49,7 @@ class Rapport extends Property {
   }
 
 class RapportProvider extends ChangeNotifier{
+  
   final _storage = FlutterSecureStorage();
 
   final List<Rapport> _properties = [];
