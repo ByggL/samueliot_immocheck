@@ -11,6 +11,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'package:image_picker/image_picker.dart'; 
 import 'package:share_plus/share_plus.dart';
 import 'package:samueliot_immocheck/data/enums.dart';
 import 'package:samueliot_immocheck/providers/element_provider.dart';
@@ -112,23 +113,34 @@ class _ReportPageState extends State<ReportPage> {
       ),
     );
 
-
     // 2. Add detailed pages for each element with ASYNCHRONOUS image loading
     for (final room in rapport.roomList) {
       for (final element in room.elements) {
         final List<pw.Widget> imageWidgets = [];
 
-        // Check if elementPicture contains image paths (as XFile.path Strings)
+        // Check if elementPicture contains image paths (as String) or XFile objects (in-memory)
         if (element.elementPicture.isNotEmpty) {
           
           // print('Processing ${element.elementPicture.length} images for ${element.elementName.name}');
 
-          // CRITICAL: Iterate through picture paths and load bytes ASYNCHRONOUSLY
-          for (final dynamic picturePath in element.elementPicture) {
-            if (picturePath is String) {
+          // CRITICAL: Iterate through picture paths/objects and load bytes ASYNCHRONOUSLY
+          for (final dynamic pictureItem in element.elementPicture) {
+            String? imagePath;
+
+            // NEW LOGIC START: Check for XFile object
+            if (pictureItem is XFile) {
+              imagePath = pictureItem.path;
+            } 
+            // NEW LOGIC START: Check for String object (path from saved data)
+            else if (pictureItem is String) {
+              imagePath = pictureItem;
+            }
+            // NEW LOGIC END
+            
+            if (imagePath != null && imagePath.isNotEmpty) {
               try {
                 // Read the file from the local path into bytes
-                final File file = File(picturePath);
+                final File file = File(imagePath);
                 final Uint8List imageBytes = await file.readAsBytes();
                 
                 // Add the image bytes to the list of PDF widgets
@@ -152,7 +164,7 @@ class _ReportPageState extends State<ReportPage> {
                 );
               } catch (e) {
                 // This catch block handles failed reads (e.g., file moved/deleted)
-                // print('Error loading image at path $picturePath: $e');
+                // print('Error loading image at path $imagePath: $e');
                 imageWidgets.add(
                   pw.Text('Erreur: Image indisponible à ce chemin.', style: pw.TextStyle(color: PdfColors.red, font: font)),
                 );
