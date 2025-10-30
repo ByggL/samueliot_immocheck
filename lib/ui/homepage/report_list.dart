@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:samueliot_immocheck/data/enums.dart';
 import 'package:samueliot_immocheck/providers/rapport_provider.dart';
 import 'package:samueliot_immocheck/ui/forms/build_rapport_form.dart';
-import 'package:samueliot_immocheck/ui/homepage/report_card.dart'; 
+import 'package:samueliot_immocheck/ui/homepage/report_card.dart';
 import 'package:provider/provider.dart';
-
 
 class ReportList extends StatefulWidget {
   const ReportList({super.key});
@@ -14,25 +14,67 @@ class ReportList extends StatefulWidget {
 }
 
 class _ReportListState extends State<ReportList> {
-
   List<Rapport> _reports = [];
 
   final TextEditingController _searchController = TextEditingController();
   String _searchField = 'name'; // current field used for filtering
   String _searchQuery = '';
 
+  String _filterValue = 'none';
+
   // Filtered list based on query and field
+  // List<Rapport> get _filteredReports {
+  //   return _reports.where((report) {
+  //     final fieldValue = switch (_searchField) {
+  //       'name' => report.nom,
+  //       'type' => report.propertyType.toString(),
+  //       'date' => DateFormat('yyyy-MM-dd – kk:mm').format(report.creationDate),
+  //       _ => report.nom,
+  //     };
+
+  //     final isIncludedByFilter = switch (_filterValue) {
+  //       'none' => true,
+  //       'inprogress' => report.statutRapport == EtatsRapport.enCours,
+  //       'finished' => report.statutRapport == EtatsRapport.termine,
+  //       _ => true,
+  //     };
+
+  //     if (_searchField.isEmpty) return isIncludedByFilter;
+
+  //     return fieldValue.toLowerCase().contains(_searchQuery.toLowerCase()) &&
+  //         isIncludedByFilter;
+  //   }).toList();
+  // }
+
   List<Rapport> get _filteredReports {
-    if (_searchQuery.isEmpty) return _reports;
-    return _reports.where((report) {
-      final fieldValue = switch (_searchField) {
-        'name' => report.nom,
-        'type' => report.propertyType.toString(),
-        'date' => DateFormat('yyyy-MM-dd – kk:mm').format(report.creationDate),
-        _ => report.nom,
+    Iterable<Rapport> filtered = _reports;
+
+    filtered = filtered.where((report) {
+      final isIncludedByFilter = switch (_filterValue) {
+        'none' => true,
+        'inprogress' => report.statutRapport == EtatsRapport.enCours,
+        'finished' => report.statutRapport == EtatsRapport.termine,
+        _ => true,
       };
-      return fieldValue.toLowerCase().contains(_searchQuery.toLowerCase());
-    }).toList();
+
+      return isIncludedByFilter;
+    });
+
+    if (_searchQuery.isNotEmpty) {
+      filtered = filtered.where((report) {
+        final fieldValue = switch (_searchField) {
+          'name' => report.nom,
+          'type' => report.propertyType.toString(),
+          'date' => DateFormat(
+            'yyyy-MM-dd – kk:mm',
+          ).format(report.creationDate),
+          _ => report.nom,
+        };
+        return fieldValue.toLowerCase().contains(_searchQuery.toLowerCase());
+      });
+    }
+
+    return filtered.toList();
   }
 
   @override
@@ -40,8 +82,6 @@ class _ReportListState extends State<ReportList> {
     super.initState();
     context.read<RapportProvider>().loadRapports();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -91,6 +131,20 @@ class _ReportListState extends State<ReportList> {
             ),
           ),
 
+          DropdownButton<String>(
+            value: _filterValue,
+            onChanged: (value) {
+              setState(() {
+                _filterValue = value!;
+              });
+            },
+            items: const [
+              DropdownMenuItem(value: 'none', child: Text('None')),
+              DropdownMenuItem(value: 'inprogress', child: Text('En cours')),
+              DropdownMenuItem(value: 'finished', child: Text('Terminé')),
+            ],
+          ),
+
           // 📋 Report list
           Expanded(
             child:
@@ -109,7 +163,9 @@ class _ReportListState extends State<ReportList> {
                         return ReportCard(
                           report: report,
                           onDelete: () {
-                            context.read<RapportProvider>().removeRapport(report);
+                            context.read<RapportProvider>().removeRapport(
+                              report,
+                            );
                             setState(() {});
                           },
                         );
@@ -119,7 +175,7 @@ class _ReportListState extends State<ReportList> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: ()  {
+        onPressed: () {
           Navigator.push(context, BuildRapportForm.route());
         },
         label: const Text("Add Report"),
