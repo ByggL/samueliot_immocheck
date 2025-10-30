@@ -21,7 +21,6 @@ class ReportPage extends StatefulWidget {
 }
 
 class _ReportPageState extends State<ReportPage> {
-  
   // Single refresh function for all sub-components to call
   void _refreshState() {
     setState(() {});
@@ -34,42 +33,47 @@ class _ReportPageState extends State<ReportPage> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 16,
-          right: 16,
-          top: 20,
-        ),
-        child: RoomCreationForm(
-          onSubmit: (room) {
-            context.read<RapportProvider>().addRoomToRapport(
-              rapport.propertyId,
-              room,
-            );
-            Navigator.pop(context);
-            _refreshState();
-          },
-        ),
-      ),
+      builder:
+          (context) => Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              left: 16,
+              right: 16,
+              top: 20,
+            ),
+            child: RoomCreationForm(
+              onSubmit: (room) {
+                context.read<RapportProvider>().addRoomToRapport(
+                  rapport.propertyId,
+                  room,
+                );
+                Navigator.pop(context);
+                _refreshState();
+              },
+            ),
+          ),
     );
   }
 
   void _validateReport(Rapport rapport) {
-    Navigator.push<bool>(context, ValidateSignRapportPage.route(rapport))
-      .then((result) {
-        if (result == true) {
-          _refreshState();
-        }
+    Navigator.push<bool>(context, ValidateSignRapportPage.route(rapport)).then((
+      result,
+    ) {
+      if (result == true) {
+        _refreshState();
       }
-    );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     // Watch for changes on the report object
-    final rapport = context.watch<RapportProvider>().getRapportById(widget.rapport.propertyId) ?? widget.rapport;
-    
+    final rapport =
+        context.watch<RapportProvider>().getRapportById(
+          widget.rapport.propertyId,
+        ) ??
+        widget.rapport;
+
     // Instantiate the service
     final exportService = PdfExportService(context, rapport);
     final isRapportTermine = rapport.statutRapport == EtatsRapport.termine;
@@ -83,8 +87,11 @@ class _ReportPageState extends State<ReportPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 1. Report Main Info Card (Extracted Widget)
-            ReportInfoCard(rapport: rapport),
-          
+            Align(
+              alignment: Alignment.center,
+              child: ReportInfoCard(rapport: rapport),
+            ),
+
             const SizedBox(height: 16),
 
             // 2. Validation Button
@@ -96,7 +103,7 @@ class _ReportPageState extends State<ReportPage> {
                 icon: const Icon(Icons.check),
                 label: const Text("Valider le rapport", maxLines: 3),
               ),
-                  
+
             const SizedBox(height: 16),
 
             // 3. Export Buttons (Logic delegated to service)
@@ -116,12 +123,14 @@ class _ReportPageState extends State<ReportPage> {
                   ),
                 ],
               ),
-          
+
             const SizedBox(height: 16),
 
             Text(
               "Pièces du bien",
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
 
@@ -159,27 +168,40 @@ class _ReportPageState extends State<ReportPage> {
             const SizedBox(height: 12),
 
             // 6. Signature Display
-            const Text("Signatures du rapport:", style: TextStyle(fontWeight: FontWeight.bold)),
-            ...rapport.signature.asMap().entries.map((entry) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: (entry.value != null && entry.value!.isNotEmpty) 
-                ? Column( 
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                        Text("Signature ${entry.key == 0 ? "locataire" : "propriétaire"} :"),
-                        Container(
-                            height: 120,
-                            width: 300,
-                            decoration: BoxDecoration(
-                                border: Border.all(color: const Color.fromARGB(255, 250, 53, 53)),
-                                borderRadius: BorderRadius.circular(8),
+            const Text(
+              "Signatures du rapport:",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            ...rapport.signature.asMap().entries.map(
+              (entry) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child:
+                    (entry.value != null && entry.value!.isNotEmpty)
+                        ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Signature ${entry.key == 0 ? "locataire" : "propriétaire"} :",
                             ),
-                            child: Image.memory(entry.value!, fit: BoxFit.contain),
-                        ),
-                    ],
-                  )
-                : const SizedBox.shrink(),
-            ))
+                            Container(
+                              height: 120,
+                              width: 300,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: const Color.fromARGB(255, 250, 53, 53),
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Image.memory(
+                                entry.value!,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ],
+                        )
+                        : const SizedBox.shrink(),
+              ),
+            ),
           ],
         ),
       ),

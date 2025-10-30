@@ -22,30 +22,6 @@ class _ReportListState extends State<ReportList> {
 
   String _filterValue = 'none';
 
-  // Filtered list based on query and field
-  // List<Rapport> get _filteredReports {
-  //   return _reports.where((report) {
-  //     final fieldValue = switch (_searchField) {
-  //       'name' => report.nom,
-  //       'type' => report.propertyType.toString(),
-  //       'date' => DateFormat('yyyy-MM-dd – kk:mm').format(report.creationDate),
-  //       _ => report.nom,
-  //     };
-
-  //     final isIncludedByFilter = switch (_filterValue) {
-  //       'none' => true,
-  //       'inprogress' => report.statutRapport == EtatsRapport.enCours,
-  //       'finished' => report.statutRapport == EtatsRapport.termine,
-  //       _ => true,
-  //     };
-
-  //     if (_searchField.isEmpty) return isIncludedByFilter;
-
-  //     return fieldValue.toLowerCase().contains(_searchQuery.toLowerCase()) &&
-  //         isIncludedByFilter;
-  //   }).toList();
-  // }
-
   List<Rapport> get _filteredReports {
     Iterable<Rapport> filtered = _reports;
 
@@ -104,6 +80,7 @@ class _ReportListState extends State<ReportList> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
+                      // fillColor: Theme.of(context).secondaryHeaderColor,
                     ),
                     onChanged: (value) {
                       setState(() {
