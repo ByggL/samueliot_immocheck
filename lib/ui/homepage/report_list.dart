@@ -14,7 +14,6 @@ class ReportList extends StatefulWidget {
 }
 
 class _ReportListState extends State<ReportList> {
-  List<Rapport> _reports = [];
 
   final TextEditingController _searchController = TextEditingController();
   String _searchField = 'name'; // current field used for filtering
@@ -46,8 +45,8 @@ class _ReportListState extends State<ReportList> {
   //   }).toList();
   // }
 
-  List<Rapport> get _filteredReports {
-    Iterable<Rapport> filtered = _reports;
+  List<Rapport> _filteredReports(List<Rapport> allReports) {
+    Iterable<Rapport> filtered = allReports;
 
     filtered = filtered.where((report) {
       final isIncludedByFilter = switch (_filterValue) {
@@ -77,6 +76,93 @@ class _ReportListState extends State<ReportList> {
     return filtered.toList();
   }
 
+  
+  Widget _buildBody(BuildContext context, RapportProvider rapportProvider) {
+    // 1. ÉTAT DE CHARGEMENT
+    if (rapportProvider.isLoading) {
+      return const Center(child: CircularProgressIndicator()); 
+    }
+
+    // 2. ÉTAT D'ERREUR
+    if (rapportProvider.errorMessage != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, color: Colors.red, size: 50),
+            const SizedBox(height: 10),
+            Text(
+              rapportProvider.errorMessage!,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.red, fontSize: 16),
+            ),
+            const SizedBox(height: 10),
+            TextButton(
+              onPressed: rapportProvider.loadRapports, 
+              child: const Text('Réessayer'),
+            ),
+          ],
+        ),
+      );
+    }
+    
+    final allReports = rapportProvider.properties.cast<Rapport>();
+    final filteredReports = _filteredReports(allReports);
+
+    // 3. ÉTAT VIDE (si aucune donnée du tout)
+    if (allReports.isEmpty && rapportProvider.isInitialized) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.note_add_outlined, color: Colors.grey, size: 60),
+            const SizedBox(height: 10),
+            const Text(
+              "Aucun rapport trouvé.",
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+            const Text("Commencez par ajouter un nouveau rapport.", style: TextStyle(color: Colors.grey)),
+          ],
+        ),
+      );
+    }
+
+    // 4. ÉTAT DE DONNÉES PRÊTES (y compris le cas où la recherche ne retourne rien)
+    if (filteredReports.isEmpty && _searchQuery.isNotEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.search_off, color: Colors.grey, size: 50),
+            const SizedBox(height: 10),
+            const Text(
+              "Aucun rapport ne correspond à votre recherche.",
+              style: TextStyle(fontSize: 16),
+            ),
+          ],
+        ),
+      );
+    }
+
+
+    // Affichage Prêt
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: filteredReports.length,
+      itemBuilder: (context, index) {
+        final report = filteredReports[index];
+        return ReportCard(
+          report: report,
+          onDelete: () {
+            context.read<RapportProvider>().removeRapport(
+              report,
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -85,8 +171,9 @@ class _ReportListState extends State<ReportList> {
 
   @override
   Widget build(BuildContext context) {
-    _reports = context.watch<RapportProvider>().properties.cast<Rapport>();
-    return Scaffold(
+      final rapportProvider = context.watch<RapportProvider>();
+      
+      return Scaffold(
       appBar: AppBar(title: const Text('Reports')),
       body: Column(
         children: [
@@ -158,30 +245,7 @@ class _ReportListState extends State<ReportList> {
 
           // 📋 Report list
           Expanded(
-            child:
-                _filteredReports.isEmpty
-                    ? const Center(
-                      child: Text(
-                        "No matching reports.",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    )
-                    : ListView.builder(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      itemCount: _filteredReports.length,
-                      itemBuilder: (context, index) {
-                        final report = _filteredReports[index];
-                        return ReportCard(
-                          report: report,
-                          onDelete: () {
-                            context.read<RapportProvider>().removeRapport(
-                              report,
-                            );
-                            setState(() {});
-                          },
-                        );
-                      },
-                    ),
+            child: _buildBody(context, rapportProvider),
           ),
         ],
       ),

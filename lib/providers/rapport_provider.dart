@@ -51,8 +51,15 @@ class Rapport extends Property {
 class RapportProvider extends ChangeNotifier{
   
   final _storage = FlutterSecureStorage();
-
   final List<Rapport> _properties = [];
+
+  bool _isLoading = false;
+  String? _errorMessage;
+  bool _isInitialized = false;
+
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
+  bool get isInitialized => _isInitialized;
 
   List<Property> get properties => List.unmodifiable(_properties);
 
@@ -120,11 +127,30 @@ class RapportProvider extends ChangeNotifier{
   
   // Load all properties from storage
   Future<void> loadRapports() async {
-    String? data = await _storage.read(key: 'properties_list');
-    if (data != null) {
-      List<dynamic> decoded = jsonDecode(data);
+    if (_isInitialized && _properties.isNotEmpty && _errorMessage == null) return; // Évite de recharger si déjà OK
+
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      // Simulation d'un petit délai de chargement (pour mieux voir le loader)
+      await Future.delayed(const Duration(milliseconds: 1000)); 
+
+      String? data = await _storage.read(key: 'properties_list');
+      
+      if (data != null) {
+        List<dynamic> decoded = jsonDecode(data);
+        _properties.clear();
+        _properties.addAll(decoded.map((p) => Rapport.fromJson(p)).toList());
+      }
+      _isInitialized = true;
+
+    } on Exception catch (e) {
+      _errorMessage = "Erreur de chargement des rapports : ${e.toString()}";
       _properties.clear();
-      _properties.addAll(decoded.map((p) => Rapport.fromJson(p)).toList());
+    } finally {
+      _isLoading = false;
       notifyListeners();
     }
   }
