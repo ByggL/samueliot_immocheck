@@ -14,40 +14,14 @@ class ReportList extends StatefulWidget {
 }
 
 class _ReportListState extends State<ReportList> {
-
   final TextEditingController _searchController = TextEditingController();
   String _searchField = 'name'; // current field used for filtering
   String _searchQuery = '';
 
   String _filterValue = 'none';
 
-  // Filtered list based on query and field
-  // List<Rapport> get _filteredReports {
-  //   return _reports.where((report) {
-  //     final fieldValue = switch (_searchField) {
-  //       'name' => report.nom,
-  //       'type' => report.propertyType.toString(),
-  //       'date' => DateFormat('yyyy-MM-dd – kk:mm').format(report.creationDate),
-  //       _ => report.nom,
-  //     };
-
-  //     final isIncludedByFilter = switch (_filterValue) {
-  //       'none' => true,
-  //       'inprogress' => report.statutRapport == EtatsRapport.enCours,
-  //       'finished' => report.statutRapport == EtatsRapport.termine,
-  //       _ => true,
-  //     };
-
-  //     if (_searchField.isEmpty) return isIncludedByFilter;
-
-  //     return fieldValue.toLowerCase().contains(_searchQuery.toLowerCase()) &&
-  //         isIncludedByFilter;
-  //   }).toList();
-  // }
-
   List<Rapport> _filteredReports(List<Rapport> allReports) {
     Iterable<Rapport> filtered = allReports;
-
     filtered = filtered.where((report) {
       final isIncludedByFilter = switch (_filterValue) {
         'none' => true,
@@ -76,11 +50,10 @@ class _ReportListState extends State<ReportList> {
     return filtered.toList();
   }
 
-  
   Widget _buildBody(BuildContext context, RapportProvider rapportProvider) {
     // 1. ÉTAT DE CHARGEMENT
     if (rapportProvider.isLoading) {
-      return const Center(child: CircularProgressIndicator()); 
+      return const Center(child: CircularProgressIndicator());
     }
 
     // 2. ÉTAT D'ERREUR
@@ -98,14 +71,14 @@ class _ReportListState extends State<ReportList> {
             ),
             const SizedBox(height: 10),
             TextButton(
-              onPressed: rapportProvider.loadRapports, 
+              onPressed: rapportProvider.loadRapports,
               child: const Text('Réessayer'),
             ),
           ],
         ),
       );
     }
-    
+
     final allReports = rapportProvider.properties.cast<Rapport>();
     final filteredReports = _filteredReports(allReports);
 
@@ -121,7 +94,10 @@ class _ReportListState extends State<ReportList> {
               "Aucun rapport trouvé.",
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
-            const Text("Commencez par ajouter un nouveau rapport.", style: TextStyle(color: Colors.grey)),
+            const Text(
+              "Commencez par ajouter un nouveau rapport.",
+              style: TextStyle(color: Colors.grey),
+            ),
           ],
         ),
       );
@@ -144,7 +120,6 @@ class _ReportListState extends State<ReportList> {
       );
     }
 
-
     // Affichage Prêt
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -154,9 +129,7 @@ class _ReportListState extends State<ReportList> {
         return ReportCard(
           report: report,
           onDelete: () {
-            context.read<RapportProvider>().removeRapport(
-              report,
-            );
+            context.read<RapportProvider>().removeRapport(report);
           },
         );
       },
@@ -171,9 +144,9 @@ class _ReportListState extends State<ReportList> {
 
   @override
   Widget build(BuildContext context) {
-      final rapportProvider = context.watch<RapportProvider>();
-      
-      return Scaffold(
+    final rapportProvider = context.watch<RapportProvider>();
+
+    return Scaffold(
       appBar: AppBar(title: const Text('Reports')),
       body: Column(
         children: [
@@ -191,6 +164,7 @@ class _ReportListState extends State<ReportList> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
+                      // fillColor: Theme.of(context).secondaryHeaderColor,
                     ),
                     onChanged: (value) {
                       setState(() {
@@ -244,9 +218,7 @@ class _ReportListState extends State<ReportList> {
           ),
 
           // 📋 Report list
-          Expanded(
-            child: _buildBody(context, rapportProvider),
-          ),
+          Expanded(child: _buildBody(context, rapportProvider)),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
