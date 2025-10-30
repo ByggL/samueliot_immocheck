@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:samueliot_immocheck/styles/themes.dart';
 import 'package:samueliot_immocheck/ui/homepage/report_list.dart';
 import 'package:provider/provider.dart';
 import 'package:samueliot_immocheck/providers/rapport_provider.dart';
@@ -7,9 +8,15 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (context) => RapportProvider(),
-      child:const MyApp()
-      ) 
-    );
+      child: const MyApp(),
+    ),
+  );
+}
+
+ThemeData getCurrentTheme() {
+  final now = DateTime.now();
+  final hour = now.hour;
+  return (hour >= 9 && hour < 18) ? lightTheme : darkTheme;
 }
 
 class MyApp extends StatelessWidget {
@@ -20,11 +27,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'ImmoCheck',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
-      ),
+      theme: getCurrentTheme(),
       home: const ReportList(),
     );
   }
 }
-
