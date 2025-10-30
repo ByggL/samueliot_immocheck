@@ -131,18 +131,29 @@ class _ReportListState extends State<ReportList> {
             ),
           ),
 
-          DropdownButton<String>(
-            value: _filterValue,
-            onChanged: (value) {
-              setState(() {
-                _filterValue = value!;
-              });
-            },
-            items: const [
-              DropdownMenuItem(value: 'none', child: Text('None')),
-              DropdownMenuItem(value: 'inprogress', child: Text('En cours')),
-              DropdownMenuItem(value: 'finished', child: Text('Terminé')),
-            ],
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Row(
+              children: [
+                const SizedBox(width: 20),
+                DropdownButton<String>(
+                  value: _filterValue,
+                  onChanged: (value) {
+                    setState(() {
+                      _filterValue = value!;
+                    });
+                  },
+                  items: const [
+                    DropdownMenuItem(value: 'none', child: Text('None')),
+                    DropdownMenuItem(
+                      value: 'inprogress',
+                      child: Text('En cours'),
+                    ),
+                    DropdownMenuItem(value: 'finished', child: Text('Terminé')),
+                  ],
+                ),
+              ],
+            ),
           ),
 
           // 📋 Report list
