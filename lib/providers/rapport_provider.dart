@@ -239,7 +239,22 @@ class RapportProvider extends ChangeNotifier{
     saveRapports();
   }
   
+  void updateRoomInRapport(String propertyId, Room updatedRoom) {
+    Rapport? property = getRapportById(propertyId);
+    if (property == null) {
+      throw Exception('No property found with this ID');
+    }
 
+    int roomIndex = property.roomList.indexWhere((r) => r.roomId == updatedRoom.roomId);
+    // print('Updating room with ID: ${updatedRoom.roomId}, name: ${updatedRoom.roomTrueName}, roomType: ${updatedRoom.roomName}');
+    if (roomIndex != -1) {
+      // print('?');
+      property.roomList[roomIndex] = updatedRoom;
+      updateRapportGlobal(property);
+      notifyListeners();
+      saveRapports();
+    }
+  }
 
   void changeRoomStatus(Room roomToCheck){
     EtatsElement newEtat ;
@@ -253,6 +268,7 @@ class RapportProvider extends ChangeNotifier{
         // Create a NEW Room object with the updated status
         Room newRoom = Room(
             roomId: roomToCheck.roomId,
+            roomTrueName: roomToCheck.roomTrueName,
             roomName: roomToCheck.roomName,
             statut: newEtat, // <<< The new status is applied here
             elements: roomToCheck.elements,

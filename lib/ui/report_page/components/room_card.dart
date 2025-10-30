@@ -5,8 +5,9 @@ import 'package:samueliot_immocheck/providers/piece_provider.dart';
 import 'package:samueliot_immocheck/providers/rapport_provider.dart';
 import 'package:samueliot_immocheck/ui/forms/element_inspection_form.dart';
 import 'package:samueliot_immocheck/ui/report_page/components/room_element_tile.dart';
+import 'package:samueliot_immocheck/ui/forms/build_room_form.dart';
 
-class RoomCard extends StatelessWidget {
+class RoomCard extends StatefulWidget {
   final Rapport rapport;
   final Room room;
   final VoidCallback onUpdate; 
@@ -17,6 +18,59 @@ class RoomCard extends StatelessWidget {
     required this.room,
     required this.onUpdate,
   });
+
+  @override 
+  State<RoomCard> createState() => _RoomCardState();
+}
+
+
+class _RoomCardState extends State<RoomCard> {
+  Rapport get rapport => widget.rapport;
+  Room get room => widget.room;
+  VoidCallback get onUpdate => widget.onUpdate;
+    
+  void _openAddRoomForm(BuildContext context, Rapport rapport,Room room) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 16,
+          right: 16,
+          top: 20,
+        ),
+        child: RoomCreationForm(
+          onSubmit: (room) {
+            Room newRoom = Room(
+              roomId: room.roomId,
+              roomTrueName: room.roomTrueName,
+              roomName: room.roomName,
+              statut: room.statut,
+              elements: room.elements,
+            );
+            
+            context.read<RapportProvider>().updateRoomInRapport(
+              rapport.propertyId,
+              newRoom,
+            );
+            Navigator.pop(context);
+            setState(() {});
+          },
+          existingRoom: Room(
+              roomId: room.roomId,
+              roomTrueName: room.roomTrueName,
+              roomName: room.roomName,
+              statut: room.statut,
+              elements: room.elements,
+            ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,16 +84,27 @@ class RoomCard extends StatelessWidget {
         title: Row(
           children: [
             Expanded(
-              child: Text(
-                roomTypeString(room.roomName),
-                style: const TextStyle(fontWeight: FontWeight.bold),
+              child: 
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    room.roomTrueName,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  Text(
+                    roomTypeString(room.roomName),
+                  ),
+                ],
               ),
+              
             ),
             IconButton(
               onPressed: isRapportTermine ? null : () {
-                
+                _openAddRoomForm(context, rapport, room);
               },
-              icon: Icon(Icons.change_circle),
+              icon: Icon(Icons.edit),
             ),
             IconButton(
               onPressed: isRapportTermine ? null : () {

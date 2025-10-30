@@ -130,6 +130,7 @@ Widget _buildRapportCard(Rapport report) {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("- ${roomTypeString(room.roomName)}"),
+                Text("  Nom de la pièce: ${room.roomTrueName}"),
                 Text("  Statut: ${etatElementString(room.statut)}"),
                 Text("  Nombre d'éléments: ${room.elements.length}"),
                 ...room.elements.map((element) => Padding(

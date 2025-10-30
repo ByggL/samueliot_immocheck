@@ -54,7 +54,7 @@ class PdfExportService {
           // Rooms summary section on the cover
           widgets.add(pw.Text('Sommaire des pièces', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, font: font)));
           for (final room in rapport.roomList) {
-            widgets.add(pw.Text('- ${roomTypeString(room.roomName)} (${room.elements.length} éléments)', style: pw.TextStyle(font: font)));
+            widgets.add(pw.Text('- ${room.roomTrueName}/${roomTypeString(room.roomName)} (${room.elements.length} éléments)', style: pw.TextStyle(font: font)));
           }
 
           return [

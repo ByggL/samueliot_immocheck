@@ -5,8 +5,9 @@ import 'package:uuid/uuid.dart';
 
 class RoomCreationForm extends StatefulWidget {
   final Function(Room) onSubmit;
+  final Room? existingRoom;
 
-  const RoomCreationForm({super.key,required this.onSubmit});
+  const RoomCreationForm({super.key,required this.onSubmit, this.existingRoom});
 
   @override
   State<RoomCreationForm> createState() => _RoomCreationForm();
@@ -14,8 +15,21 @@ class RoomCreationForm extends StatefulWidget {
 
 class _RoomCreationForm extends State<RoomCreationForm> {
   final _formKey = GlobalKey<FormState>();
-  RoomTypes _nameController = RoomTypes.bathroom;
-  EtatsElement? _selectedStatus;
+  RoomTypes _nameController= RoomTypes.bathroom ;
+  EtatsElement? _selectedStatus ;
+  TextEditingController _roomTrueNameController = TextEditingController();
+  String? _roomId ;
+
+  @override
+  void initState() {  
+    super.initState();
+    if (widget.existingRoom != null) {
+      _nameController = widget.existingRoom!.roomName;
+      _selectedStatus = widget.existingRoom!.statut;
+      _roomTrueNameController.text= widget.existingRoom!.roomTrueName;
+      _roomId = widget.existingRoom!.roomId;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +44,13 @@ class _RoomCreationForm extends State<RoomCreationForm> {
             style: Theme.of(
               context,
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            decoration: const InputDecoration(
+              labelText: "Nom de la pièce",
+            ),
+            controller: _roomTrueNameController,
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<RoomTypes>(
@@ -81,10 +102,10 @@ class _RoomCreationForm extends State<RoomCreationForm> {
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
                   final newRoom = Room(
-                    roomId: Uuid().v4(),
+                    roomId: _roomId ?? Uuid().v4(),
+                    roomTrueName: _roomTrueNameController.text,
                     roomName: _nameController,
                     statut: _selectedStatus!,
-                    elements: [],
                   );
                   widget.onSubmit(newRoom);
                 }

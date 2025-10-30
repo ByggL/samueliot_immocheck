@@ -8,11 +8,13 @@ import 'package:samueliot_immocheck/providers/property_provider.dart';
 
 class Room {
   final String roomId;
+  final String roomTrueName;
   final RoomTypes roomName;
   final EtatsElement statut;
   final List<RoomElement> elements;
 
   Room({
+    required this.roomTrueName,
     required this.roomName,
     required this.statut,
     List<RoomElement>? elements,
@@ -120,6 +122,7 @@ static List<RoomElement> defaultElementsForRoomType(RoomTypes type, String roomI
 
   Map<String, dynamic> toJson() => {
     'id': roomId,
+    'roomTrueName': roomTrueName,
     'roomName': roomName.index,
     'statut': statut.index,
     'elements': elements.map((e) => e.toJson()).toList(),
@@ -127,6 +130,7 @@ static List<RoomElement> defaultElementsForRoomType(RoomTypes type, String roomI
 
   factory Room.fromJson(Map<String, dynamic> json) => Room(
     roomId: json['id'],
+    roomTrueName: json['roomTrueName'],
     roomName: RoomTypes.values[json['roomName']],
     statut: EtatsElement.values[json['statut']],
     elements: (json['elements'] as List).map((e) => RoomElement.fromJson(e)).toList(),
