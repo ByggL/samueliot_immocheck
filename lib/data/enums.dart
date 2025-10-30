@@ -25,7 +25,6 @@ String etatRapportString(EtatsRapport etat) {
 enum EtatsElement {
   ok,
   aReparer,
-  damaged,
 }
 
 String etatElementString(EtatsElement etat) {
@@ -34,8 +33,6 @@ String etatElementString(EtatsElement etat) {
       return "Bon état";
     case EtatsElement.aReparer:
       return "A réparer";
-    case EtatsElement.damaged:
-      return "Endommagé";
   }
 }
 

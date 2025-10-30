@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:samueliot_immocheck/data/enums.dart';
 import 'package:samueliot_immocheck/providers/piece_provider.dart';
@@ -35,6 +33,7 @@ class _RoomCreationForm extends State<RoomCreationForm> {
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<RoomTypes>(
+            // ignore: deprecated_member_use
             value: _nameController,
             decoration: const InputDecoration(
               labelText: "Type de pièce",
@@ -85,6 +84,7 @@ class _RoomCreationForm extends State<RoomCreationForm> {
                     roomId: Uuid().v4(),
                     roomName: _nameController,
                     statut: _selectedStatus!,
+                    elements: [],
                   );
                   widget.onSubmit(newRoom);
                 }

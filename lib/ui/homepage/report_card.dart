@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:samueliot_immocheck/data/enums.dart';
 import 'package:samueliot_immocheck/providers/rapport_provider.dart';
-import 'package:samueliot_immocheck/ui/report_page/report_page_t.dart';
+import 'package:samueliot_immocheck/ui/report_page/report_page.dart';
 
 class ReportCard extends StatelessWidget {
   final Rapport report;

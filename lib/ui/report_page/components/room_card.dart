@@ -37,6 +37,12 @@ class RoomCard extends StatelessWidget {
             ),
             IconButton(
               onPressed: isRapportTermine ? null : () {
+                
+              },
+              icon: Icon(Icons.change_circle),
+            ),
+            IconButton(
+              onPressed: isRapportTermine ? null : () {
                 context.read<RapportProvider>().changeRoomStatus(room);
                 onUpdate();
               },
