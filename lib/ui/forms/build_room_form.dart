@@ -17,7 +17,7 @@ class _RoomCreationForm extends State<RoomCreationForm> {
   final _formKey = GlobalKey<FormState>();
   RoomTypes _nameController= RoomTypes.bathroom ;
   EtatsElement? _selectedStatus ;
-  TextEditingController _roomTrueNameController = TextEditingController();
+  final TextEditingController _roomTrueNameController = TextEditingController();
   String? _roomId ;
 
   @override
@@ -46,11 +46,18 @@ class _RoomCreationForm extends State<RoomCreationForm> {
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-          TextField(
+          TextFormField(
             decoration: const InputDecoration(
               labelText: "Nom de la pièce",
             ),
             controller: _roomTrueNameController,
+            validator:
+                (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Veuillez entrer un nom pour la pièce";  
+                    }
+                  return null;
+                },
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<RoomTypes>(
