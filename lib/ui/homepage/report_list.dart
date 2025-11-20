@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:samueliot_immocheck/data/enums.dart';
@@ -147,7 +149,7 @@ class _ReportListState extends State<ReportList> {
     final rapportProvider = context.watch<RapportProvider>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Reports')),
+      appBar: AppBar(title: const Text('ImmoCheck Reports')),
       body: Column(
         children: [
           // 🔍 Search bar + dropdown

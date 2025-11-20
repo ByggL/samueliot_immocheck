@@ -1,16 +1,66 @@
-# samueliot_immocheck
+# ImmoCheck
 
-A new Flutter project.
+Le projet ImmoCheck consiste à créer une application mobile permettant de réaliser un état des lieux complet : création de biens, inspection des pièces, checklist, photos et signatures, le tout sans backend.
 
-## Getting Started
+# Prérequis
 
-This project is a starting point for a Flutter application.
+- SDK Flutter
+- Android Studio ou Xcode pour les émulateurs et déploiements mobile
+- Un émulateur de smartphone
 
-A few resources to get you started if this is your first Flutter project:
+# Installation
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Cloner le repo
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+git clone https://github.com/ByggL/samueliot_immocheck.git
+```
+
+Installer les dépendances Flutter
+
+```bash
+flutter pub get
+```
+
+# Lancer l'application
+
+## Android ou iOS
+
+```bash
+flutter run
+```
+
+## Web
+
+```bash
+flutter run -d chrome
+```
+
+# Structure des fichiers
+
+```
+└── lib/
+    ├── data/
+    ├── providers/
+    ├── styles/
+    │   └── themes.dart
+    └── ui/
+        ├── forms/
+        ├── homepage/
+        ├── report_page/
+        └── main.dart
+```
+
+# Build des releases
+
+## Android
+
+```bash
+flutter build
+```
+
+## iOS
+
+```bash
+flutter build ios
+```
