@@ -208,9 +208,9 @@ class _ReportListState extends State<ReportList> {
                     DropdownMenuItem(value: 'none', child: Text('None')),
                     DropdownMenuItem(
                       value: 'inprogress',
-                      child: Text('En cours'),
+                      child: Text('In progress'),
                     ),
-                    DropdownMenuItem(value: 'finished', child: Text('Terminé')),
+                    DropdownMenuItem(value: 'finished', child: Text('Finished')),
                   ],
                 ),
               ],

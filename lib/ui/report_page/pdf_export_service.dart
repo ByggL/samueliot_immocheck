@@ -39,22 +39,22 @@ class PdfExportService {
           
           // Signatures section
           widgets.add(pw.Text('Signatures', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, font: font)));
-          widgets.add(pw.Text('Signature: ${rapport.signature.isNotEmpty ? 'Oui' : 'Non'}', style: pw.TextStyle(font: font)));
+          widgets.add(pw.Text('Signature: ${rapport.signature.isNotEmpty ? 'Yes' : 'No'}', style: pw.TextStyle(font: font)));
           widgets.add(pw.SizedBox(height: 16));
           
           // Main info section
-          widgets.add(pw.Text('Informations principales', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, font: font)));
-          widgets.add(pw.Text('Nom: ${rapport.nom}', style: pw.TextStyle(font: font)));
-          widgets.add(pw.Text('Adresse: ${rapport.adresse}', style: pw.TextStyle(font: font)));
+          widgets.add(pw.Text('Main informations', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, font: font)));
+          widgets.add(pw.Text('Name: ${rapport.nom}', style: pw.TextStyle(font: font)));
+          widgets.add(pw.Text('Adress: ${rapport.adresse}', style: pw.TextStyle(font: font)));
           widgets.add(pw.Text('Type: ${propertyString(rapport.propertyType)}', style: pw.TextStyle(font: font)));
-          widgets.add(pw.Text('Statut du rapport: ${etatRapportString(rapport.statutRapport)}', style: pw.TextStyle(font: font)));
-          widgets.add(pw.Text('Créé le: ${DateFormat('yyyy-MM-dd - kk:mm').format(rapport.creationDate)}', style: pw.TextStyle(font: font)));
+          widgets.add(pw.Text('Report status: ${etatRapportString(rapport.statutRapport)}', style: pw.TextStyle(font: font)));
+          widgets.add(pw.Text('Created : ${DateFormat('yyyy-MM-dd - kk:mm').format(rapport.creationDate)}', style: pw.TextStyle(font: font)));
           widgets.add(pw.SizedBox(height: 16));
           
           // Rooms summary section on the cover
-          widgets.add(pw.Text('Sommaire des pièces', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, font: font)));
+          widgets.add(pw.Text('Summary of the rooms', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, font: font)));
           for (final room in rapport.roomList) {
-            widgets.add(pw.Text('- ${room.roomTrueName}/${roomTypeString(room.roomName)} (${room.elements.length} éléments)', style: pw.TextStyle(font: font)));
+            widgets.add(pw.Text('- ${room.roomTrueName}/${roomTypeString(room.roomName)} (${room.elements.length} elements)', style: pw.TextStyle(font: font)));
           }
 
           return [
@@ -94,7 +94,7 @@ class PdfExportService {
                       crossAxisAlignment: pw.CrossAxisAlignment.start,
                       children: [
                         pw.Text(
-                          'Photo pour ${roomElementString(element.elementName)} (Statut: ${element.statut.name})',
+                          'Picture for ${roomElementString(element.elementName)} (Status: ${element.statut.name})',
                           style: pw.TextStyle(font: font, fontSize: 10),
                         ),
                         pw.Image(
@@ -107,7 +107,7 @@ class PdfExportService {
                 );
               } catch (e) {
                 imageWidgets.add(
-                  pw.Text('Erreur: Image indisponible à ce chemin.', style: pw.TextStyle(color: PdfColors.red, font: font)),
+                  pw.Text('Error: No picture found.', style: pw.TextStyle(color: PdfColors.red, font: font)),
                 );
               }
             }
@@ -123,12 +123,12 @@ class PdfExportService {
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
                   pw.Text(
-                    'Pièce: ${roomTypeString(room.roomName)} - Élément: ${roomElementString(element.elementName)}',
+                    'Room: ${roomTypeString(room.roomName)} - Element: ${roomElementString(element.elementName)}',
                     style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, font: font),
                   ),
                   pw.SizedBox(height: 10),
-                  pw.Text('Statut: ${etatElementString(element.statut)}', style: pw.TextStyle(font: font)),
-                  pw.Text('Commentaire: ${element.commentaire}', style: pw.TextStyle(font: font)),
+                  pw.Text('Status: ${etatElementString(element.statut)}', style: pw.TextStyle(font: font)),
+                  pw.Text('Commentary: ${element.commentaire}', style: pw.TextStyle(font: font)),
                   pw.SizedBox(height: 15),
                   
                   // Insert the asynchronously loaded image widgets

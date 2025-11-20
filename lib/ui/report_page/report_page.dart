@@ -79,7 +79,7 @@ class _ReportPageState extends State<ReportPage> {
     final isRapportTermine = rapport.statutRapport == EtatsRapport.termine;
 
     return Scaffold(
-      appBar: AppBar(title: Text("Rapport: ${rapport.nom}")),
+      appBar: AppBar(title: Text("Report: ${rapport.nom}")),
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -96,12 +96,12 @@ class _ReportPageState extends State<ReportPage> {
 
             // 2. Validation Button
             if (isRapportTermine)
-              const Text("Rapport déjà validé")
+              const Text("Report already validated")
             else
               ElevatedButton.icon(
                 onPressed: () => _validateReport(rapport),
                 icon: const Icon(Icons.check),
-                label: const Text("Valider le rapport", maxLines: 3),
+                label: const Text("Validate report", maxLines: 3),
               ),
 
             const SizedBox(height: 16),
@@ -112,14 +112,16 @@ class _ReportPageState extends State<ReportPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   ElevatedButton.icon(
+                    
                     onPressed: exportService.generateAndSharePdf,
                     icon: const Icon(Icons.picture_as_pdf),
-                    label: const Text("Exporter le rapport en PDF"),
+                    label: const Text("Export to PDF"),
                   ),
+                  SizedBox(height: 8),
                   ElevatedButton.icon(
                     onPressed: exportService.exportJson,
                     icon: const Icon(Icons.file_copy),
-                    label: const Text("Exporter le rapport en JSON"),
+                    label: const Text("Export to JSON"),
                   ),
                 ],
               ),
@@ -127,7 +129,7 @@ class _ReportPageState extends State<ReportPage> {
             const SizedBox(height: 16),
 
             Text(
-              "Pièces du bien",
+              "Property's rooms:",
               style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -147,13 +149,13 @@ class _ReportPageState extends State<ReportPage> {
 
             // 5. Add Room Button
             if (isRapportTermine)
-              const Text("Rapport déjà validé, impossible de le modifier")
+              const Text("Report is validated, cannot add more rooms.")
             else
               Center(
                 child: ElevatedButton.icon(
                   onPressed: () => _openAddRoomForm(context, rapport),
                   icon: const Icon(Icons.add),
-                  label: const Text("Ajouter une pièce"),
+                  label: const Text("Add Room"),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 20,
@@ -169,7 +171,7 @@ class _ReportPageState extends State<ReportPage> {
 
             // 6. Signature Display
             const Text(
-              "Signatures du rapport:",
+              "Report signatures:",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             ...rapport.signature.asMap().entries.map(
@@ -181,16 +183,18 @@ class _ReportPageState extends State<ReportPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Signature ${entry.key == 0 ? "locataire" : "propriétaire"} :",
+                              "Signature ${entry.key == 0 ? "tenant" : "landlord"} :",
                             ),
                             Container(
                               height: 120,
                               width: 300,
+                              
                               decoration: BoxDecoration(
                                 border: Border.all(
                                   color: const Color.fromARGB(255, 250, 53, 53),
                                 ),
                                 borderRadius: BorderRadius.circular(8),
+                                color: Colors.white,
                               ),
                               child: Image.memory(
                                 entry.value!,

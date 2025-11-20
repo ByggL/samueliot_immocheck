@@ -81,17 +81,17 @@ class _BuildRapportFormState extends State<BuildRapportForm> {
               children: [
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(labelText: 'Nom propriété'),
+                  decoration: const InputDecoration(labelText: "Property's name"),
                   validator: (value) =>
-                      value == null || value.isEmpty ? 'Champ requis' : null,
+                      value == null || value.isEmpty ? 'Required' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _adressController,
-                  decoration: const InputDecoration(labelText: 'Adresse'),
+                  decoration: const InputDecoration(labelText: 'Address'),
                   maxLines: 3,
                   validator: (value) =>
-                      value == null || value.isEmpty ? 'Champ requis' : null,
+                      value == null || value.isEmpty ? 'Required' : null,
                 ),
                 const SizedBox(height: 16),
                 ListTile(
@@ -110,10 +110,10 @@ class _BuildRapportFormState extends State<BuildRapportForm> {
                             ),
                           )
                           .toList(),
-                  decoration: const InputDecoration(labelText: 'Statut'),
+                  decoration: const InputDecoration(labelText: 'Status'),
                   onChanged: (value) => setState(() => _selectedStatus = value),
                   validator: (value) =>
-                      value == null ? 'Sélectionnez un statut' : null,
+                      value == null ? 'Select a status' : null,
                 ),
                 const SizedBox(height: 24),
                 DropdownButtonFormField<PropertyTypes>(
@@ -126,10 +126,10 @@ class _BuildRapportFormState extends State<BuildRapportForm> {
                             ),
                           )
                           .toList(),
-                  decoration: const InputDecoration(labelText: 'Type de propriété'),
+                  decoration: const InputDecoration(labelText: 'Property type'),
                   onChanged: (value) => setState(() => _propertyType = value!),
                   validator: (value) =>
-                      value == null ? 'Sélectionnez un statut' : null,
+                      value == null ? 'Select a type' : null,
                 ),          
                 // const SizedBox(height: 24),
                 // DropdownButtonFormField<String>(
@@ -150,7 +150,7 @@ class _BuildRapportFormState extends State<BuildRapportForm> {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _submit,
-                  child: const Text('Créer le rapport'),
+                  child: const Text('Create report'),
                 ),
               ],
             ),

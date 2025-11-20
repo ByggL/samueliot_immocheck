@@ -40,7 +40,7 @@ class _RoomCreationForm extends State<RoomCreationForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Nouvelle pièce",
+            "New room",
             style: Theme.of(
               context,
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -48,13 +48,13 @@ class _RoomCreationForm extends State<RoomCreationForm> {
           const SizedBox(height: 16),
           TextFormField(
             decoration: const InputDecoration(
-              labelText: "Nom de la pièce",
+              labelText: "Room name",
             ),
             controller: _roomTrueNameController,
             validator:
                 (value) {
                   if (value == null || value.isEmpty) {
-                    return "Veuillez entrer un nom pour la pièce";  
+                    return "Please enter a room name";  
                     }
                   return null;
                 },
@@ -64,7 +64,7 @@ class _RoomCreationForm extends State<RoomCreationForm> {
             // ignore: deprecated_member_use
             value: _nameController,
             decoration: const InputDecoration(
-              labelText: "Type de pièce",
+              labelText: "Room type",
               border: OutlineInputBorder(),
             ),
             items:
@@ -79,13 +79,13 @@ class _RoomCreationForm extends State<RoomCreationForm> {
             onChanged: (value) => setState(() => _nameController = value!),
             validator:
                 (value) =>
-                    value == null ? "Veuillez sélectionner un type" : null,
+                    value == null ? "Please select a type" : null,
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<EtatsElement>(
             value: _selectedStatus,
             decoration: const InputDecoration(
-              labelText: "Statut de la pièce",
+              labelText: "Room status",
               border: OutlineInputBorder(),
             ),
             items:
@@ -100,7 +100,7 @@ class _RoomCreationForm extends State<RoomCreationForm> {
             onChanged: (value) => setState(() => _selectedStatus = value),
             validator:
                 (value) =>
-                    value == null ? "Veuillez sélectionner un statut" : null,
+                    value == null ? "Please select a status" : null,
           ),
           const SizedBox(height: 24),
           SizedBox(
@@ -117,7 +117,7 @@ class _RoomCreationForm extends State<RoomCreationForm> {
                   widget.onSubmit(newRoom);
                 }
               },
-              child: const Text("Ajouter la pièce"),
+              child: const Text("Add room"),
             ),
           ),
           const SizedBox(height: 16),

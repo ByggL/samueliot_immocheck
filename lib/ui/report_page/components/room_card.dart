@@ -125,7 +125,7 @@ class _RoomCardState extends State<RoomCard> {
             ),
           ],
         ),
-        subtitle: Text("Statut: ${etatElementString(room.statut)}"),
+        subtitle: Text("Status: ${etatElementString(room.statut)}"),
         children: [
           ...room.elements.map(
             (element) => RoomElementTile(
@@ -143,7 +143,7 @@ class _RoomCardState extends State<RoomCard> {
                   Navigator.push(context, ElementInspectionFormPage.route(null, room)).then((_) => onUpdate());
                 },
                 icon: const Icon(Icons.add_circle_outline),
-                label: const Text("Ajouter un élément"),
+                label: const Text("Add element"),
               ),
             ),
           ),

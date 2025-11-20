@@ -26,13 +26,13 @@ class ReportInfoCard extends StatelessWidget {
               ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Text("Adresse: ${rapport.adresse}"),
+            Text("Adress: ${rapport.adresse}"),
             Text("Type: ${propertyString(rapport.propertyType)}"),
             Text(
-              "Statut du rapport: ${etatRapportString(rapport.statutRapport)}",
+              "Report status: ${etatRapportString(rapport.statutRapport)}",
             ),
             Text(
-              "Créé le: ${DateFormat('yyyy-MM-dd – kk:mm').format(rapport.creationDate)}",
+              "Created : ${DateFormat('yyyy-MM-dd – kk:mm').format(rapport.creationDate)}",
             ),
           ],
         ),

@@ -147,7 +147,7 @@ class RapportProvider extends ChangeNotifier{
       _isInitialized = true;
 
     } on Exception catch (e) {
-      _errorMessage = "Erreur de chargement des rapports : ${e.toString()}";
+      _errorMessage = "Error while loading reports : ${e.toString()}";
       _properties.clear();
     } finally {
       _isLoading = false;
@@ -296,7 +296,7 @@ class RapportProvider extends ChangeNotifier{
             roomId: roomToCheck.roomId,
             roomTrueName: roomToCheck.roomTrueName,
             roomName: roomToCheck.roomName,
-            statut: newEtat, // <<< The new status is applied here
+            statut: newEtat, 
             elements: roomToCheck.elements,
         );
 

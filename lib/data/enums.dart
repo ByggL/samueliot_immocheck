@@ -3,11 +3,11 @@ enum PropertyTypes { maison, appartement, autre }
 String propertyString(PropertyTypes property) {
   switch (property) {
     case PropertyTypes.maison:
-      return "Maison";
+      return "House";
     case PropertyTypes.appartement:
-      return "Appartment";
+      return "Apartment";
     case PropertyTypes.autre:
-      return "Autre";
+      return "Other";
   }
 }
 
@@ -16,9 +16,9 @@ enum EtatsRapport { enCours, termine }
 String etatRapportString(EtatsRapport etat) {
   switch (etat) {
     case EtatsRapport.enCours:
-      return "En cours";
+      return "In progress";
     case EtatsRapport.termine:
-      return "Terminé";
+      return "Finished";
   }
 }
 
@@ -30,9 +30,9 @@ enum EtatsElement {
 String etatElementString(EtatsElement etat) {
   switch (etat) {
     case EtatsElement.ok:
-      return "Bon état";
+      return "Ok";
     case EtatsElement.aReparer:
-      return "A réparer";
+      return "Damaged";
   }
 }
 
@@ -50,19 +50,19 @@ enum RoomTypes{
 String roomTypeString(RoomTypes type) {
   switch (type) {
     case RoomTypes.entrance:
-      return "Entrée";
+      return "Entrance";
     case RoomTypes.livingRoom:
-      return "Salon";
+      return "Living Room";
     case RoomTypes.kitchen:
-      return "Cuisine";
+      return "Kitchen";
     case RoomTypes.bathroom:
-      return "Salle de bain";
+      return "Bathroom";
     case RoomTypes.bedroom:
-      return "Chambre";
+      return "Bedroom";
     case RoomTypes.wc:
       return "WC";
     case RoomTypes.other:
-      return "Autre";
+      return "Other";
   }
 }
 
@@ -104,55 +104,55 @@ String roomElementString(RoomElements element) {
 switch (element) {
       // General Structure
       case RoomElements.door:
-        return "Porte";
+        return "Door";
       case RoomElements.walls:
-        return "Murs";
+        return "Walls";
       case RoomElements.floor:
-        return "Sol";
+        return "Floor";
       case RoomElements.ceiling:
-        return "Plafond";
+        return "Ceiling";
       case RoomElements.window:
-        return "Fenêtre";
+        return "Window";
 
       // Utilities & Comfort
       case RoomElements.heating:
-        return "Chauffage";
+        return "Heating";
       case RoomElements.lighting:
-        return "Éclairage";
+        return "Lighting";
       case RoomElements.electricalOutlets:
-        return "Prises électriques";
+        return "Electrical Outlets";
       case RoomElements.ventilation:
         return "Ventilation (VMC)";
       case RoomElements.storage:
-        return "Rangements";
+        return "Storage";
 
       // Kitchen specific
       case RoomElements.countertop:
-        return "Plan de travail";
+        return "Countertop";
       case RoomElements.cabinets:
-        return "Meubles de cuisine";
+        return "Cabinets";
       case RoomElements.sink:
-        return "Évier de cuisine";
+        return "Sink";
       case RoomElements.stove:
-        return "Plaque de cuisson";
+        return "Stove/Cooking Surface";
       case RoomElements.refrigeratorSpace:
-        return "Emplacement réfrigérateur";
+        return "Refrigerator Space";
 
       // Bathroom/WC specific
       case RoomElements.bathtubOrShower:
-        return "Baignoire ou douche";
+        return "Bathtub or Shower";
       case RoomElements.toilets:
-        return "Toilettes";
+        return "Toilets";
       case RoomElements.sinkVanity:
-        return "Meuble vasque/Lavabo";
+        return "Sink/Vanity";
 
       // Living/Bedroom specific
       case RoomElements.wardrobe:
-        return "Penderie/Placard";
+        return "Wardrobe";
       case RoomElements.fireplace:
-        return "Cheminée";
+        return "Fireplace";
       case RoomElements.balconyOrTerrace:
-        return "Balcon ou Terrasse";
+        return "Balcony or Terrace";
     }
   
 }

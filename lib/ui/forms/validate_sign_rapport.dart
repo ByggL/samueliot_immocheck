@@ -43,13 +43,14 @@ class _ValidateSignRapportPageState extends State<ValidateSignRapportPage> {
         [tenantSignature,  ownerSignature],
       );
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Rapport validé avec succès!')),
+        const SnackBar(content: Text("Succesfully validated report"),
+        ),
       );
       Navigator.pop(context, true);
     }
     else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Signatures requises pour valider le rapport!'),duration: Duration(seconds: 2),),
+        const SnackBar(content: Text('Signatures required to validate report'),duration: Duration(seconds: 2),),
       );
     }
   }
@@ -59,20 +60,20 @@ class _ValidateSignRapportPageState extends State<ValidateSignRapportPage> {
     final report = widget.reportData;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Validation du rapport'),
+        title: const Text('Report validation'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
             const Text(
-              'Récapitulatif du rapport',
+              'Global summary and overview',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             _buildRapportCard(report),
             const SizedBox(height: 24),
-            const Text('Signature du locataire', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text('Tenant signature', style: TextStyle(fontWeight: FontWeight.bold)),
             Signature(
               controller: _tenantController,
               height: 150,
@@ -80,10 +81,10 @@ class _ValidateSignRapportPageState extends State<ValidateSignRapportPage> {
             ),
             TextButton(
               onPressed: () => _tenantController.clear(),
-              child: const Text('Effacer la signature'),
+              child: const Text('Erase'),
             ),
             const SizedBox(height: 24),
-            const Text('Signature du propriétaire', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text('Landlord signature', style: TextStyle(fontWeight: FontWeight.bold)),
             Signature(
               controller: _ownerController,
               height: 150,
@@ -91,12 +92,12 @@ class _ValidateSignRapportPageState extends State<ValidateSignRapportPage> {
             ),
             TextButton(
               onPressed: () => _ownerController.clear(),
-              child: const Text('Effacer la signature'),
+              child: const Text('Erase'),
             ),
             const SizedBox(height: 32),
             ElevatedButton(
               onPressed: _validateReport,
-              child: const Text('Valider le rapport'),
+              child: const Text('Validate report'),
             ),
           ],
         ),
@@ -117,31 +118,31 @@ Widget _buildRapportCard(Rapport report) {
         children: [
           Text(report.nom, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          Text("Adresse: ${report.adresse}"),
+          Text("Address: ${report.adresse}"),
           Text("Type: ${propertyString(report.propertyType)}"),
-          Text("Statut du rapport: ${etatRapportString(report.statutRapport)}"),
-          Text("Créé le: ${report.creationDate.toLocal()}"),
-          Text("Signature actuelle: ${report.signature.isNotEmpty ? "Oui" : "Non"}"),
+          Text("Report status: ${etatRapportString(report.statutRapport)}"),
+          Text("Created: ${report.creationDate.toLocal()}"),
+          Text("Is signed: ${report.signature.isNotEmpty ? "Yes" : "No"}"),
           const SizedBox(height: 12),
-          Text("Pièces:", style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text("Rooms:", style: const TextStyle(fontWeight: FontWeight.bold)),
           ...report.roomList.map((room) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("- ${roomTypeString(room.roomName)}"),
-                Text("  Nom de la pièce: ${room.roomTrueName}"),
-                Text("  Statut: ${etatElementString(room.statut)}"),
-                Text("  Nombre d'éléments: ${room.elements.length}"),
+                Text("  Room name: ${room.roomTrueName}"),
+                Text("  Status: ${etatElementString(room.statut)}"),
+                Text("  Number of elements: ${room.elements.length}"),
                 ...room.elements.map((element) => Padding(
                   padding: const EdgeInsets.only(left: 16, top: 2, bottom: 2),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text("• ${roomElementString(element.elementName)}"),
-                      Text("   Statut: ${etatElementString(element.statut)}"),
-                      Text("   Commentaire: ${element.commentaire}"),
-                      Text("   Nombre de photos: ${element.elementPicture.length}"),
+                      Text("   Status: ${etatElementString(element.statut)}"),
+                      Text("   Commentary: ${element.commentaire}"),
+                      Text("   Number of pictures: ${element.elementPicture.length}"),
                     ],
                   ),
                 )),
