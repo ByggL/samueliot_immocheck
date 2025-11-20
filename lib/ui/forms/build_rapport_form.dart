@@ -130,23 +130,7 @@ class _BuildRapportFormState extends State<BuildRapportForm> {
                   onChanged: (value) => setState(() => _propertyType = value!),
                   validator: (value) =>
                       value == null ? 'Select a type' : null,
-                ),          
-                // const SizedBox(height: 24),
-                // DropdownButtonFormField<String>(
-                //   value: _signature,
-                //   items: ['Oui', 'Non']
-                //           .map(
-                //             (status) => DropdownMenuItem(
-                //               value: status,
-                //               child: Text(status),
-                //             ),
-                //           )
-                //           .toList(),
-                //   decoration: const InputDecoration(labelText: 'Signé ?'),
-                //   onChanged: (value) => setState(() => _signature = value!),
-                //   validator: (value) =>
-                //       value == null ? 'Sélectionnez un statut' : null,
-                // ),          
+                ),               
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _submit,

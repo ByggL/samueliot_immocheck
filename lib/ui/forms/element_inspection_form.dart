@@ -46,7 +46,6 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text("Maximum of 3 photos reached. Please remove an image to add a new one."),
-//Text('Maximum 3 photos atteintes. Supprimez une image pour en ajouter une nouvelle.'),
               duration: Duration(milliseconds: 1500),
             ),
           );
@@ -84,7 +83,7 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.pop(context, ImageSource.camera),
-                  child: const Text('Camera'), // L'option n'est pas masquée, mais l'utilisateur est informé de la limitation.
+                  child: const Text('Camera'), 
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(context, ImageSource.gallery),
@@ -96,7 +95,7 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
         );
       }
 
-      if (chosenSource == null) return; // L'utilisateur a annulé
+      if (chosenSource == null) return; 
 
       ImageSource sourceToUse = chosenSource;
       XFile? image;
@@ -114,7 +113,7 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Camera not available, use gallery instead'),//Text('Caméra indisponible. Ouverture de la Galerie.'),
+                  content: Text('Camera not available, use gallery instead'),
                   duration: Duration(milliseconds: 1500),
                 ),
               );
@@ -124,7 +123,7 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
         } else if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Camera permission denied. Cannot take photo.'),//Text('Permission Caméra refusée. Impossible de prendre une photo.'),
+              content: Text('Camera permission denied. Cannot take photo.'),
               duration: Duration(milliseconds: 1500),
             ),
           );
@@ -146,7 +145,7 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
         } else if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Gallery permission denied. Cannot select photo.'),//Text('Permission Galerie refusée. Impossible de sélectionner une photo.'),
+              content: Text('Gallery permission denied. Cannot select photo.'),
               duration: Duration(milliseconds: 1500),
             ),
           );
@@ -171,7 +170,7 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Image selection cancelled.'),//Text('Sélection d\'image annulée.'),
+              content: Text('Image selection cancelled.'),
               duration: Duration(milliseconds: 500),
             ),
           );

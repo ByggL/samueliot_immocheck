@@ -113,14 +113,7 @@ class RapportProvider extends ChangeNotifier{
       key: 'properties_list',
       value: jsonEncode(_properties.map((p) => p.toJson()).toList()),
     );
-    // print("Saved rapports");
-    // for (var p in _properties) {
-    //   if (p is Rapport) {
-    //     print(jsonEncode(p.toJson()));
-    //   } else {
-    //     print(p);
-    //   }
-    // }
+
     notifyListeners();
   }
 
@@ -217,11 +210,9 @@ class RapportProvider extends ChangeNotifier{
       throw Exception('No property found with this ID');
     }
     property.roomList.add(roomToAdd);
-    // print("Adding to global");
     updateRapportGlobal(property);
     notifyListeners(); // Tell widgets something changed
     saveRapports();   // Persist the change
-    // print("Saved???");
   }
 
   void saveElementToRoom(String roomId, RoomElement newOrUpdatedElement) {
@@ -246,7 +237,6 @@ class RapportProvider extends ChangeNotifier{
     if (propertyUpdated != null) {
       updateRapportGlobal(propertyUpdated);
     }
-    // Notify all listeners and persist the change.
     notifyListeners();
     saveRapports();
   }
@@ -272,9 +262,7 @@ class RapportProvider extends ChangeNotifier{
     }
 
     int roomIndex = property.roomList.indexWhere((r) => r.roomId == updatedRoom.roomId);
-    // print('Updating room with ID: ${updatedRoom.roomId}, name: ${updatedRoom.roomTrueName}, roomType: ${updatedRoom.roomName}');
     if (roomIndex != -1) {
-      // print('?');
       property.roomList[roomIndex] = updatedRoom;
       updateRapportGlobal(property);
       notifyListeners();
