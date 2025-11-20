@@ -12,16 +12,23 @@ import 'package:samueliot_immocheck/providers/rapport_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:provider/provider.dart';
 
-
 class ElementInspectionFormPage extends StatefulWidget {
   final RoomElement? element;
   final Room? roomToAddTo;
-  const ElementInspectionFormPage({super.key, this.element, required this.roomToAddTo});
+  const ElementInspectionFormPage({
+    super.key,
+    this.element,
+    required this.roomToAddTo,
+  });
 
   static Route<void> route(RoomElement? element, Room? roomToAddTo) {
     return MaterialPageRoute<void>(
       settings: const RouteSettings(name: '/elementsInspectionForm'),
-      builder: (_) => ElementInspectionFormPage(element: element, roomToAddTo: roomToAddTo),
+      builder:
+          (_) => ElementInspectionFormPage(
+            element: element,
+            roomToAddTo: roomToAddTo,
+          ),
     );
   }
 
@@ -34,149 +41,160 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
   final _formKey = GlobalKey<FormState>();
 
   String _comment = '';
-  String _elementId='';
+  String _elementId = '';
   RoomElements _elementName = RoomElements.floor;
   EtatsElement _status = EtatsElement.ok;
   List<XFile?> _images = [];
 
-
   Future<void> _selectImageSourceAndPick() async {
-      if (_images.length >= 3) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Maximum of 3 photos reached. Please remove an image to add a new one."),
-              duration: Duration(milliseconds: 1500),
+    if (_images.length >= 3) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Maximum of 3 photos reached. Please remove an image to add a new one.",
             ),
-          );
-        }
-        return;
-      }
-
-      ImageSource? chosenSource;
-      // Vérifie si la plateforme est mobile (Android/iOS)
-      bool isMobile = !kIsWeb && (Platform.isAndroid || Platform.isIOS); //
-
-      if (!isMobile) {
-        // Plateforme non mobile : bascule automatique vers la Galerie et informe l'utilisateur.
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Camera not supported on this device, please use gallery instead'),//Text('Caméra non supportée sur cette plateforme. Ouverture de la Galerie.'),
-              duration: Duration(milliseconds: 1500),
-            ),
-          );
-        }
-        chosenSource = ImageSource.gallery;
-        
-      } else {
-        // Plateforme mobile : Affiche la boîte de dialogue.
-        chosenSource = await showDialog<ImageSource>(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Select image source'), 
-              content: const Text(
-                "If camera doesn't work, please use gallery instead", //
-                style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
-              ),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.pop(context, ImageSource.camera),
-                  child: const Text('Camera'), 
-                ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context, ImageSource.gallery),
-                  child: const Text('Gallery'),
-                ),
-              ],
-            );
-          },
+            duration: Duration(milliseconds: 1500),
+          ),
         );
       }
+      return;
+    }
 
-      if (chosenSource == null) return; 
+    ImageSource? chosenSource;
+    // Vérifie si la plateforme est mobile (Android/iOS)
+    bool isMobile = !kIsWeb && (Platform.isAndroid || Platform.isIOS); //
 
-      ImageSource sourceToUse = chosenSource;
-      XFile? image;
-      final ImagePicker picker = ImagePicker();
+    if (!isMobile) {
+      // Plateforme non mobile : bascule automatique vers la Galerie et informe l'utilisateur.
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Camera not supported on this device, please use gallery instead',
+            ), //Text('Caméra non supportée sur cette plateforme. Ouverture de la Galerie.'),
+            duration: Duration(milliseconds: 1500),
+          ),
+        );
+      }
+      chosenSource = ImageSource.gallery;
+    } else {
+      // Plateforme mobile : Affiche la boîte de dialogue.
+      chosenSource = await showDialog<ImageSource>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Select image source'),
+            content: const Text(
+              "If camera doesn't work, please use gallery instead", //
+              style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, ImageSource.camera),
+                child: const Text('Camera'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, ImageSource.gallery),
+                child: const Text('Gallery'),
+              ),
+            ],
+          );
+        },
+      );
+    }
 
-      // 1. Gestion des permissions et tentative pour la Caméra
-      if (sourceToUse == ImageSource.camera) {
-        PermissionStatus status = await Permission.camera.request(); // Demande de permission Caméra
+    if (chosenSource == null) return;
 
-        if (status.isGranted) {
-          try {
-            image = await picker.pickImage(source: ImageSource.camera);
-          } catch (e) {
-            // Échec de la caméra (ex: bug émulateur). Bascule automatique vers la Galerie.
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Camera not available, use gallery instead'),
-                  duration: Duration(milliseconds: 1500),
-                ),
-              );
-            }
-            sourceToUse = ImageSource.gallery; // Changement de source pour la tentative de repli
+    ImageSource sourceToUse = chosenSource;
+    XFile? image;
+    final ImagePicker picker = ImagePicker();
+
+    // 1. Gestion des permissions et tentative pour la Caméra
+    if (sourceToUse == ImageSource.camera) {
+      PermissionStatus status =
+          await Permission.camera.request(); // Demande de permission Caméra
+
+      if (status.isGranted) {
+        try {
+          image = await picker.pickImage(source: ImageSource.camera);
+        } catch (e) {
+          // Échec de la caméra (ex: bug émulateur). Bascule automatique vers la Galerie.
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Camera not available, use gallery instead'),
+                duration: Duration(milliseconds: 1500),
+              ),
+            );
           }
-        } else if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Camera permission denied. Cannot take photo.'),
-              duration: Duration(milliseconds: 1500),
-            ),
-          );
-          return;
+          sourceToUse =
+              ImageSource
+                  .gallery; // Changement de source pour la tentative de repli
         }
-      }
-
-      // 2. Tentative de sélection depuis la Galerie (choisie initialement, ou après échec caméra)
-      if (sourceToUse == ImageSource.gallery && image == null) {
-        PermissionStatus status;
-        if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) {
-          status = PermissionStatus.granted; // Pas de vérification nécessaire sur Desktop/Web
-        } else {
-          status = await Permission.photos.request(); // Demande de permission Photos/Galerie
-        }
-
-        if (status.isGranted) {
-          image = await picker.pickImage(source: ImageSource.gallery);
-        } else if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Gallery permission denied. Cannot select photo.'),
-              duration: Duration(milliseconds: 1500),
-            ),
-          );
-          return;
-        }
-      }
-      
-      // 3. Traitement final de l'image
-      if (image != null) {
-        if (mounted) {
-          setState(() {
-            _images.add(image);
-          });
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Added picture from : ${chosenSource == ImageSource.camera && sourceToUse != ImageSource.gallery ? "Caméra" : "Galerie"}'),
-              duration: const Duration(milliseconds: 500),
-            ),
-          );
-        }
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Image selection cancelled.'),
-              duration: Duration(milliseconds: 500),
-            ),
-          );
-        }
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Camera permission denied. Cannot take photo.'),
+            duration: Duration(milliseconds: 1500),
+          ),
+        );
+        return;
       }
     }
+
+    // 2. Tentative de sélection depuis la Galerie (choisie initialement, ou après échec caméra)
+    if (sourceToUse == ImageSource.gallery && image == null) {
+      PermissionStatus status;
+      if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) {
+        status =
+            PermissionStatus
+                .granted; // Pas de vérification nécessaire sur Desktop/Web
+      } else {
+        status =
+            await Permission.photos
+                .request(); // Demande de permission Photos/Galerie
+      }
+
+      if (status.isGranted) {
+        image = await picker.pickImage(source: ImageSource.gallery);
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Gallery permission denied. Cannot select photo.'),
+            duration: Duration(milliseconds: 1500),
+          ),
+        );
+        return;
+      }
+    }
+
+    // 3. Traitement final de l'image
+    if (image != null) {
+      if (mounted) {
+        setState(() {
+          _images.add(image);
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Added picture from : ${chosenSource == ImageSource.camera && sourceToUse != ImageSource.gallery ? "Caméra" : "Galerie"}',
+            ),
+            duration: const Duration(milliseconds: 500),
+          ),
+        );
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Image selection cancelled.'),
+            duration: Duration(milliseconds: 500),
+          ),
+        );
+      }
+    }
+  }
 
   void _removeImage(int index) {
     setState(() {
@@ -184,34 +202,26 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
     });
   }
 
-  void _submit(){
-
-    
+  void _submit() {
     if (_formKey.currentState?.validate() ?? false) {
       _formKey.currentState?.save();
 
+      if (_comment == '') {
+        _comment = 'RAS';
+      }
 
-        if (_comment ==''){
-          _comment = 'RAS';
-        }
+      RoomElement elementToAdd = RoomElement(
+        commentaire: _comment,
+        elementID: _elementId,
+        elementPicture: _images,
+        statut: _status,
+        elementName: _elementName,
+      );
 
-        RoomElement elementToAdd =
-          RoomElement(
-            commentaire: _comment ,
-            elementID: _elementId ,
-            elementPicture:_images,
-            statut: _status,
-            elementName:_elementName,
-            );
-          
-
-
-        context.read<RapportProvider>()
-        .saveElementToRoom(
-          widget.roomToAddTo!.roomId,
-           elementToAdd);
-
-
+      context.read<RapportProvider>().saveElementToRoom(
+        widget.roomToAddTo!.roomId,
+        elementToAdd,
+      );
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -220,11 +230,8 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
         ),
       );
       Navigator.pop(context);
-
     }
-
   }
-
 
   @override
   void initState() {
@@ -236,14 +243,19 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
       _images = widget.element!.elementPicture.cast<XFile>();
       _elementId = widget.element!.elementID;
       _elementName = widget.element!.elementName;
-    } else{
+    } else {
       _elementId = Uuid().v4();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-  final bool isViewOnly = context.read<RapportProvider>().getPropertyByRoomId(widget.roomToAddTo!.roomId)?.statutRapport == EtatsRapport.termine;
+    final bool isViewOnly =
+        context
+            .read<RapportProvider>()
+            .getPropertyByRoomId(widget.roomToAddTo!.roomId)
+            ?.statutRapport ==
+        EtatsRapport.termine;
     return Scaffold(
       appBar: AppBar(title: Text('Element Inspection')),
       body: Padding(
@@ -267,12 +279,16 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
                     RoomElements.values.map((element) {
                       return DropdownMenuItem(
                         value: element,
-                        child: Text(roomElementString( element)),
+                        child: Text(roomElementString(element)),
                       );
                     }).toList(),
-                onChanged: isViewOnly ? null : (value) => setState(() => _elementName = value!),
+                onChanged:
+                    isViewOnly
+                        ? null
+                        : (value) => setState(() => _elementName = value!),
                 validator:
-                    (value) => value == null ? 'Please select a room element' : null,
+                    (value) =>
+                        value == null ? 'Please select a room element' : null,
               ),
               SizedBox(height: 16),
               DropdownButtonFormField<EtatsElement>(
@@ -285,7 +301,10 @@ class _ElementInspectionFormPageState extends State<ElementInspectionFormPage> {
                         child: Text(etatElementString(status)),
                       );
                     }).toList(),
-                onChanged: isViewOnly ? null : (value) => setState(() => _status = value!),
+                onChanged:
+                    isViewOnly
+                        ? null
+                        : (value) => setState(() => _status = value!),
                 validator:
                     (value) => value == null ? 'Please select a status' : null,
               ),

@@ -22,10 +22,7 @@ String etatRapportString(EtatsRapport etat) {
   }
 }
 
-enum EtatsElement {
-  ok,
-  aReparer,
-}
+enum EtatsElement { ok, aReparer }
 
 String etatElementString(EtatsElement etat) {
   switch (etat) {
@@ -36,16 +33,7 @@ String etatElementString(EtatsElement etat) {
   }
 }
 
-
-enum RoomTypes{
-  entrance,
-  livingRoom,
-  kitchen,
-  bathroom,
-  bedroom,
-  wc,
-  other,
-}
+enum RoomTypes { entrance, livingRoom, kitchen, bathroom, bedroom, wc, other }
 
 String roomTypeString(RoomTypes type) {
   switch (type) {
@@ -65,7 +53,6 @@ String roomTypeString(RoomTypes type) {
       return "Other";
   }
 }
-
 
 enum RoomElements {
   // General Structure
@@ -92,7 +79,7 @@ enum RoomElements {
   // Bathroom/WC specific
   bathtubOrShower,
   toilets,
-  sinkVanity, 
+  sinkVanity,
 
   // Living/Bedroom specific
   wardrobe,
@@ -101,58 +88,57 @@ enum RoomElements {
 }
 
 String roomElementString(RoomElements element) {
-switch (element) {
-      // General Structure
-      case RoomElements.door:
-        return "Door";
-      case RoomElements.walls:
-        return "Walls";
-      case RoomElements.floor:
-        return "Floor";
-      case RoomElements.ceiling:
-        return "Ceiling";
-      case RoomElements.window:
-        return "Window";
+  switch (element) {
+    // General Structure
+    case RoomElements.door:
+      return "Door";
+    case RoomElements.walls:
+      return "Walls";
+    case RoomElements.floor:
+      return "Floor";
+    case RoomElements.ceiling:
+      return "Ceiling";
+    case RoomElements.window:
+      return "Window";
 
-      // Utilities & Comfort
-      case RoomElements.heating:
-        return "Heating";
-      case RoomElements.lighting:
-        return "Lighting";
-      case RoomElements.electricalOutlets:
-        return "Electrical Outlets";
-      case RoomElements.ventilation:
-        return "Ventilation (VMC)";
-      case RoomElements.storage:
-        return "Storage";
+    // Utilities & Comfort
+    case RoomElements.heating:
+      return "Heating";
+    case RoomElements.lighting:
+      return "Lighting";
+    case RoomElements.electricalOutlets:
+      return "Electrical Outlets";
+    case RoomElements.ventilation:
+      return "Ventilation (VMC)";
+    case RoomElements.storage:
+      return "Storage";
 
-      // Kitchen specific
-      case RoomElements.countertop:
-        return "Countertop";
-      case RoomElements.cabinets:
-        return "Cabinets";
-      case RoomElements.sink:
-        return "Sink";
-      case RoomElements.stove:
-        return "Stove/Cooking Surface";
-      case RoomElements.refrigeratorSpace:
-        return "Refrigerator Space";
+    // Kitchen specific
+    case RoomElements.countertop:
+      return "Countertop";
+    case RoomElements.cabinets:
+      return "Cabinets";
+    case RoomElements.sink:
+      return "Sink";
+    case RoomElements.stove:
+      return "Stove/Cooking Surface";
+    case RoomElements.refrigeratorSpace:
+      return "Refrigerator Space";
 
-      // Bathroom/WC specific
-      case RoomElements.bathtubOrShower:
-        return "Bathtub or Shower";
-      case RoomElements.toilets:
-        return "Toilets";
-      case RoomElements.sinkVanity:
-        return "Sink/Vanity";
+    // Bathroom/WC specific
+    case RoomElements.bathtubOrShower:
+      return "Bathtub or Shower";
+    case RoomElements.toilets:
+      return "Toilets";
+    case RoomElements.sinkVanity:
+      return "Sink/Vanity";
 
-      // Living/Bedroom specific
-      case RoomElements.wardrobe:
-        return "Wardrobe";
-      case RoomElements.fireplace:
-        return "Fireplace";
-      case RoomElements.balconyOrTerrace:
-        return "Balcony or Terrace";
-    }
-  
+    // Living/Bedroom specific
+    case RoomElements.wardrobe:
+      return "Wardrobe";
+    case RoomElements.fireplace:
+      return "Fireplace";
+    case RoomElements.balconyOrTerrace:
+      return "Balcony or Terrace";
+  }
 }

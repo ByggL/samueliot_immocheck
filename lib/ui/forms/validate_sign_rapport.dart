@@ -6,7 +6,7 @@ import 'package:samueliot_immocheck/providers/rapport_provider.dart';
 import 'package:signature/signature.dart';
 
 class ValidateSignRapportPage extends StatefulWidget {
-  final Rapport reportData; 
+  final Rapport reportData;
 
   static Route<bool> route(Rapport reportData) {
     return MaterialPageRoute<bool>(
@@ -14,16 +14,23 @@ class ValidateSignRapportPage extends StatefulWidget {
       builder: (_) => ValidateSignRapportPage(reportData: reportData),
     );
   }
+
   const ValidateSignRapportPage({super.key, required this.reportData});
 
   @override
-  State<ValidateSignRapportPage> createState() => _ValidateSignRapportPageState();
+  State<ValidateSignRapportPage> createState() =>
+      _ValidateSignRapportPageState();
 }
 
 class _ValidateSignRapportPageState extends State<ValidateSignRapportPage> {
-  final SignatureController _tenantController = SignatureController(penStrokeWidth: 2, penColor: Colors.black);
-  final SignatureController _ownerController = SignatureController(penStrokeWidth: 2, penColor: Colors.black);
-      
+  final SignatureController _tenantController = SignatureController(
+    penStrokeWidth: 2,
+    penColor: Colors.black,
+  );
+  final SignatureController _ownerController = SignatureController(
+    penStrokeWidth: 2,
+    penColor: Colors.black,
+  );
 
   @override
   void dispose() {
@@ -33,24 +40,24 @@ class _ValidateSignRapportPageState extends State<ValidateSignRapportPage> {
   }
 
   void _validateReport() async {
-   
     if (_tenantController.isNotEmpty && _ownerController.isNotEmpty) {
       final Uint8List? tenantSignature = await _tenantController.toPngBytes();
       final Uint8List? ownerSignature = await _ownerController.toPngBytes();
 
-      context.read<RapportProvider>().validateRapport(
-        widget.reportData, 
-        [tenantSignature,  ownerSignature],
-      );
+      context.read<RapportProvider>().validateRapport(widget.reportData, [
+        tenantSignature,
+        ownerSignature,
+      ]);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Succesfully validated report"),
-        ),
+        const SnackBar(content: Text("Succesfully validated report")),
       );
       Navigator.pop(context, true);
-    }
-    else {
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Signatures required to validate report'),duration: Duration(seconds: 2),),
+        const SnackBar(
+          content: Text('Signatures required to validate report'),
+          duration: Duration(seconds: 2),
+        ),
       );
     }
   }
@@ -59,9 +66,7 @@ class _ValidateSignRapportPageState extends State<ValidateSignRapportPage> {
   Widget build(BuildContext context) {
     final report = widget.reportData;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Report validation'),
-      ),
+      appBar: AppBar(title: const Text('Report validation')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: ListView(
@@ -73,7 +78,10 @@ class _ValidateSignRapportPageState extends State<ValidateSignRapportPage> {
             const SizedBox(height: 12),
             _buildRapportCard(report),
             const SizedBox(height: 24),
-            const Text('Tenant signature', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'Tenant signature',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             Signature(
               controller: _tenantController,
               height: 150,
@@ -84,7 +92,10 @@ class _ValidateSignRapportPageState extends State<ValidateSignRapportPage> {
               child: const Text('Erase'),
             ),
             const SizedBox(height: 24),
-            const Text('Landlord signature', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'Landlord signature',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             Signature(
               controller: _ownerController,
               height: 150,
@@ -106,7 +117,6 @@ class _ValidateSignRapportPageState extends State<ValidateSignRapportPage> {
   }
 }
 
-
 Widget _buildRapportCard(Rapport report) {
   return Card(
     elevation: 4,
@@ -116,7 +126,10 @@ Widget _buildRapportCard(Rapport report) {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(report.nom, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(
+            report.nom,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           Text("Address: ${report.adresse}"),
           Text("Type: ${propertyString(report.propertyType)}"),
@@ -125,30 +138,42 @@ Widget _buildRapportCard(Rapport report) {
           Text("Is signed: ${report.signature.isNotEmpty ? "Yes" : "No"}"),
           const SizedBox(height: 12),
           Text("Rooms:", style: const TextStyle(fontWeight: FontWeight.bold)),
-          ...report.roomList.map((room) => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("- ${roomTypeString(room.roomName)}"),
-                Text("  Room name: ${room.roomTrueName}"),
-                Text("  Status: ${etatElementString(room.statut)}"),
-                Text("  Number of elements: ${room.elements.length}"),
-                ...room.elements.map((element) => Padding(
-                  padding: const EdgeInsets.only(left: 16, top: 2, bottom: 2),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("• ${roomElementString(element.elementName)}"),
-                      Text("   Status: ${etatElementString(element.statut)}"),
-                      Text("   Commentary: ${element.commentaire}"),
-                      Text("   Number of pictures: ${element.elementPicture.length}"),
-                    ],
+          ...report.roomList.map(
+            (room) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("- ${roomTypeString(room.roomName)}"),
+                  Text("  Room name: ${room.roomTrueName}"),
+                  Text("  Status: ${etatElementString(room.statut)}"),
+                  Text("  Number of elements: ${room.elements.length}"),
+                  ...room.elements.map(
+                    (element) => Padding(
+                      padding: const EdgeInsets.only(
+                        left: 16,
+                        top: 2,
+                        bottom: 2,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("• ${roomElementString(element.elementName)}"),
+                          Text(
+                            "   Status: ${etatElementString(element.statut)}",
+                          ),
+                          Text("   Commentary: ${element.commentaire}"),
+                          Text(
+                            "   Number of pictures: ${element.elementPicture.length}",
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                )),
-              ],
+                ],
+              ),
             ),
-          )),
+          ),
         ],
       ),
     ),

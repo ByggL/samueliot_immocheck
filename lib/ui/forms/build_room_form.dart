@@ -9,7 +9,11 @@ class RoomCreationForm extends StatefulWidget {
   final Function(Room) onSubmit;
   final Room? existingRoom;
 
-  const RoomCreationForm({super.key,required this.onSubmit, this.existingRoom});
+  const RoomCreationForm({
+    super.key,
+    required this.onSubmit,
+    this.existingRoom,
+  });
 
   @override
   State<RoomCreationForm> createState() => _RoomCreationForm();
@@ -17,18 +21,18 @@ class RoomCreationForm extends StatefulWidget {
 
 class _RoomCreationForm extends State<RoomCreationForm> {
   final _formKey = GlobalKey<FormState>();
-  RoomTypes _nameController= RoomTypes.bathroom ;
-  EtatsElement? _selectedStatus ;
+  RoomTypes _nameController = RoomTypes.bathroom;
+  EtatsElement? _selectedStatus;
   final TextEditingController _roomTrueNameController = TextEditingController();
-  String? _roomId ;
+  String? _roomId;
 
   @override
-  void initState() {  
+  void initState() {
     super.initState();
     if (widget.existingRoom != null) {
       _nameController = widget.existingRoom!.roomName;
       _selectedStatus = widget.existingRoom!.statut;
-      _roomTrueNameController.text= widget.existingRoom!.roomTrueName;
+      _roomTrueNameController.text = widget.existingRoom!.roomTrueName;
       _roomId = widget.existingRoom!.roomId;
     }
   }
@@ -49,17 +53,14 @@ class _RoomCreationForm extends State<RoomCreationForm> {
           ),
           const SizedBox(height: 16),
           TextFormField(
-            decoration: const InputDecoration(
-              labelText: "Room name",
-            ),
+            decoration: const InputDecoration(labelText: "Room name"),
             controller: _roomTrueNameController,
-            validator:
-                (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Please enter a room name";  
-                    }
-                  return null;
-                },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Please enter a room name";
+              }
+              return null;
+            },
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<RoomTypes>(
@@ -78,9 +79,7 @@ class _RoomCreationForm extends State<RoomCreationForm> {
                     )
                     .toList(),
             onChanged: (value) => setState(() => _nameController = value!),
-            validator:
-                (value) =>
-                    value == null ? "Please select a type" : null,
+            validator: (value) => value == null ? "Please select a type" : null,
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<EtatsElement>(
@@ -100,8 +99,7 @@ class _RoomCreationForm extends State<RoomCreationForm> {
                     .toList(),
             onChanged: (value) => setState(() => _selectedStatus = value),
             validator:
-                (value) =>
-                    value == null ? "Please select a status" : null,
+                (value) => value == null ? "Please select a status" : null,
           ),
           const SizedBox(height: 24),
           SizedBox(

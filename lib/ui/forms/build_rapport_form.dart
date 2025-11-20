@@ -7,7 +7,6 @@ import 'package:uuid/uuid.dart';
 import 'package:provider/provider.dart';
 
 class BuildRapportForm extends StatefulWidget {
-
   const BuildRapportForm({super.key});
 
   static Route<void> route() {
@@ -22,7 +21,6 @@ class BuildRapportForm extends StatefulWidget {
 }
 
 class _BuildRapportFormState extends State<BuildRapportForm> {
-
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _adressController = TextEditingController();
@@ -45,7 +43,7 @@ class _BuildRapportFormState extends State<BuildRapportForm> {
     }
   }
 
-  void _submit() async{
+  void _submit() async {
     if (_formKey.currentState?.validate() ?? false) {
       Rapport submittedRapport = Rapport(
         nom: _nameController.text,
@@ -55,7 +53,7 @@ class _BuildRapportFormState extends State<BuildRapportForm> {
         propertyId: Uuid().v4(),
         creationDate: _selectedDate,
         statutRapport: _selectedStatus!,
-        signature: [] ,
+        signature: [],
       );
       final rapportProvider = context.read<RapportProvider>();
 
@@ -63,81 +61,78 @@ class _BuildRapportFormState extends State<BuildRapportForm> {
       await rapportProvider.saveRapports();
 
       Navigator.pop(context);
-
-
-      
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Reports')),
-        body:
-          Form(
-            key: _formKey,
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(labelText: "Property's name"),
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'Required' : null,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _adressController,
-                  decoration: const InputDecoration(labelText: 'Address'),
-                  maxLines: 3,
-                ),
-                const SizedBox(height: 16),
-                ListTile(
-                  title: Text('Date: ${_selectedDate.toLocal().toString().split(' ')[0]}'),
-                  trailing: const Icon(Icons.calendar_today),
-                  onTap: _pickDate,
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<EtatsRapport>(
-                  value: _selectedStatus,
-                  items: EtatsRapport.values
-                          .map(
-                            (status) => DropdownMenuItem(
-                              value: status,
-                              child: Text(etatRapportString(status)),
-                            ),
-                          )
-                          .toList(),
-                  decoration: const InputDecoration(labelText: 'Status'),
-                  onChanged: (value) => setState(() => _selectedStatus = value),
-                  validator: (value) =>
-                      value == null ? 'Select a status' : null,
-                ),
-                const SizedBox(height: 24),
-                DropdownButtonFormField<PropertyTypes>(
-                  value: _propertyType,
-                  items: PropertyTypes.values
-                          .map(
-                            (status) => DropdownMenuItem(
-                              value: status,
-                              child: Text(propertyString(status)),
-                            ),
-                          )
-                          .toList(),
-                  decoration: const InputDecoration(labelText: 'Property type'),
-                  onChanged: (value) => setState(() => _propertyType = value!),
-                  validator: (value) =>
-                      value == null ? 'Select a type' : null,
-                ),               
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: _submit,
-                  child: const Text('Create report'),
-                ),
-              ],
+      appBar: AppBar(title: const Text('Reports')),
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            TextFormField(
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: "Property's name"),
+              validator:
+                  (value) => value == null || value.isEmpty ? 'Required' : null,
             ),
-          )
-    
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _adressController,
+              decoration: const InputDecoration(labelText: 'Address'),
+              maxLines: 3,
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              title: Text(
+                'Date: ${_selectedDate.toLocal().toString().split(' ')[0]}',
+              ),
+              trailing: const Icon(Icons.calendar_today),
+              onTap: _pickDate,
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<EtatsRapport>(
+              value: _selectedStatus,
+              items:
+                  EtatsRapport.values
+                      .map(
+                        (status) => DropdownMenuItem(
+                          value: status,
+                          child: Text(etatRapportString(status)),
+                        ),
+                      )
+                      .toList(),
+              decoration: const InputDecoration(labelText: 'Status'),
+              onChanged: (value) => setState(() => _selectedStatus = value),
+              validator: (value) => value == null ? 'Select a status' : null,
+            ),
+            const SizedBox(height: 24),
+            DropdownButtonFormField<PropertyTypes>(
+              value: _propertyType,
+              items:
+                  PropertyTypes.values
+                      .map(
+                        (status) => DropdownMenuItem(
+                          value: status,
+                          child: Text(propertyString(status)),
+                        ),
+                      )
+                      .toList(),
+              decoration: const InputDecoration(labelText: 'Property type'),
+              onChanged: (value) => setState(() => _propertyType = value!),
+              validator: (value) => value == null ? 'Select a type' : null,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: _submit,
+              child: const Text('Create report'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

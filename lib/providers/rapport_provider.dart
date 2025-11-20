@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/foundation.dart';
 import 'package:samueliot_immocheck/data/enums.dart';
 import 'package:samueliot_immocheck/providers/element_provider.dart';
@@ -26,7 +24,7 @@ class Rapport extends Property {
 
   @override
   Map<String, dynamic> toJson() => {
-    'propertyId': propertyId, 
+    'propertyId': propertyId,
     'creationDate': creationDate.toIso8601String(),
     'nom': nom,
     'adresse': adresse,
@@ -34,7 +32,7 @@ class Rapport extends Property {
     'propertyType': propertyType.index,
     'statutRapport': statutRapport.index,
     'signature': signature.map((s) => base64Encode(s!)).toList(),
-    };
+  };
 
   factory Rapport.fromJson(Map<String, dynamic> json) => Rapport(
     nom: json['nom'],
@@ -44,12 +42,14 @@ class Rapport extends Property {
     propertyId: json['propertyId'],
     creationDate: DateTime.parse(json['creationDate']),
     statutRapport: EtatsRapport.values[json['statutRapport']],
-    signature: (json['signature'] as List).map((s) => Uint8List.fromList(base64Decode(s))).toList(),
-    );
-  }
+    signature:
+        (json['signature'] as List)
+            .map((s) => Uint8List.fromList(base64Decode(s)))
+            .toList(),
+  );
+}
 
-class RapportProvider extends ChangeNotifier{
-  
+class RapportProvider extends ChangeNotifier {
   final _storage = FlutterSecureStorage();
   final List<Rapport> _properties = [];
 
@@ -65,20 +65,20 @@ class RapportProvider extends ChangeNotifier{
 
   // Global functions
 
-  void addRapportGlobal(Rapport propertyToAdd){
+  void addRapportGlobal(Rapport propertyToAdd) {
     _properties.add(propertyToAdd);
   }
 
-  Rapport? getPropertyById(String id){
-    for (Rapport property in _properties){
-        if (property.propertyId == id){
-          return property;
-        }
-    } 
+  Rapport? getPropertyById(String id) {
+    for (Rapport property in _properties) {
+      if (property.propertyId == id) {
+        return property;
+      }
+    }
     return null;
   }
 
-  Rapport? getPropertyByRoomId(String roomId){
+  Rapport? getPropertyByRoomId(String roomId) {
     for (var property in _properties) {
       for (var room in property.roomList) {
         if (room.roomId == roomId) {
@@ -89,23 +89,24 @@ class RapportProvider extends ChangeNotifier{
     return null;
   }
 
-  void updateRapportGlobal(Rapport propertyToUpdate){
-    int index = _properties.indexWhere((p) => p.propertyId == propertyToUpdate.propertyId);
+  void updateRapportGlobal(Rapport propertyToUpdate) {
+    int index = _properties.indexWhere(
+      (p) => p.propertyId == propertyToUpdate.propertyId,
+    );
     if (index != -1) {
       _properties[index] = propertyToUpdate;
       notifyListeners();
     }
   }
 
-  Rapport? getRapportById(String id){
-    for (Rapport property in _properties){
-        if (property.propertyId == id){
-          return property;
-        }
-    } 
+  Rapport? getRapportById(String id) {
+    for (Rapport property in _properties) {
+      if (property.propertyId == id) {
+        return property;
+      }
+    }
     return null;
   }
-
 
   // Save all properties to storage
   Future<void> saveRapports() async {
@@ -117,10 +118,10 @@ class RapportProvider extends ChangeNotifier{
     notifyListeners();
   }
 
-  
   // Load all properties from storage
   Future<void> loadRapports() async {
-    if (_isInitialized && _properties.isNotEmpty && _errorMessage == null) return; // Évite de recharger si déjà OK
+    if (_isInitialized && _properties.isNotEmpty && _errorMessage == null)
+      return; // Évite de recharger si déjà OK
 
     _isLoading = true;
     _errorMessage = null;
@@ -128,17 +129,16 @@ class RapportProvider extends ChangeNotifier{
 
     try {
       // Simulation d'un petit délai de chargement (pour mieux voir le loader)
-      await Future.delayed(const Duration(milliseconds: 1000)); 
+      await Future.delayed(const Duration(milliseconds: 1000));
 
       String? data = await _storage.read(key: 'properties_list');
-      
+
       if (data != null) {
         List<dynamic> decoded = jsonDecode(data);
         _properties.clear();
         _properties.addAll(decoded.map((p) => Rapport.fromJson(p)).toList());
       }
       _isInitialized = true;
-
     } on Exception catch (e) {
       _errorMessage = "Error while loading reports : ${e.toString()}";
       _properties.clear();
@@ -148,13 +148,16 @@ class RapportProvider extends ChangeNotifier{
     }
   }
 
-  void validateRapport(Rapport report, List<Uint8List?> signatures){
-    EtatsRapport newEtat ;
-    report.statutRapport == EtatsRapport.enCours ? newEtat=EtatsRapport.termine:newEtat=EtatsRapport.enCours;
+  void validateRapport(Rapport report, List<Uint8List?> signatures) {
+    EtatsRapport newEtat;
+    report.statutRapport == EtatsRapport.enCours
+        ? newEtat = EtatsRapport.termine
+        : newEtat = EtatsRapport.enCours;
 
-    int index = _properties.indexWhere((p) => p.propertyId == report.propertyId);
+    int index = _properties.indexWhere(
+      (p) => p.propertyId == report.propertyId,
+    );
 
-    
     if (index != -1) {
       Rapport newRapport = Rapport(
         propertyId: report.propertyId,
@@ -164,7 +167,7 @@ class RapportProvider extends ChangeNotifier{
         propertyType: report.propertyType,
         creationDate: report.creationDate,
         signature: signatures,
-        statutRapport: newEtat, 
+        statutRapport: newEtat,
       );
 
       _properties[index] = newRapport;
@@ -176,21 +179,21 @@ class RapportProvider extends ChangeNotifier{
   void deleteRoomFromRapport(String propertyId, String roomId) {
     Property? rapport = getRapportById(propertyId);
     if (rapport == null) return;
-    
+
     rapport.roomList.removeWhere((r) => r.roomId == roomId);
-    
+
     notifyListeners();
     saveRapports();
   }
 
-  void removeRapport(Property propertyToRemove){
+  void removeRapport(Property propertyToRemove) {
     _properties.removeWhere((p) => p.propertyId == propertyToRemove.propertyId);
     notifyListeners();
     // Also save after removal
     saveRapports();
   }
 
-  // ROOM FUNCTIONS 
+  // ROOM FUNCTIONS
   Room? _getRoomById(String roomId) {
     for (var property in _properties.cast<Rapport>()) {
       for (var room in property.roomList) {
@@ -202,8 +205,6 @@ class RapportProvider extends ChangeNotifier{
     return null;
   }
 
-
-
   void addRoomToRapport(String propertyId, Room roomToAdd) {
     Rapport? property = getRapportById(propertyId);
     if (property == null) {
@@ -212,7 +213,7 @@ class RapportProvider extends ChangeNotifier{
     property.roomList.add(roomToAdd);
     updateRapportGlobal(property);
     notifyListeners(); // Tell widgets something changed
-    saveRapports();   // Persist the change
+    saveRapports(); // Persist the change
   }
 
   void saveElementToRoom(String roomId, RoomElement newOrUpdatedElement) {
@@ -223,7 +224,9 @@ class RapportProvider extends ChangeNotifier{
     }
 
     // Check if an element with this ID already exists (Update logic)
-    int index = room.elements.indexWhere((e) => e.elementID == newOrUpdatedElement.elementID);
+    int index = room.elements.indexWhere(
+      (e) => e.elementID == newOrUpdatedElement.elementID,
+    );
 
     if (index != -1) {
       // It exists: REPLACE the old element with the updated one.
@@ -232,7 +235,7 @@ class RapportProvider extends ChangeNotifier{
       // It's new: ADD the new element.
       room.elements.add(newOrUpdatedElement);
     }
-    
+
     Rapport? propertyUpdated = getPropertyByRoomId(roomId);
     if (propertyUpdated != null) {
       updateRapportGlobal(propertyUpdated);
@@ -244,9 +247,9 @@ class RapportProvider extends ChangeNotifier{
   void deleteElementFromRoom(String roomId, String elementId) {
     Room? room = _getRoomById(roomId);
     if (room == null) return;
-    
+
     room.elements.removeWhere((e) => e.elementID == elementId);
-    
+
     Rapport? propertyUpdated = getPropertyByRoomId(roomId);
     if (propertyUpdated != null) {
       updateRapportGlobal(propertyUpdated);
@@ -254,14 +257,16 @@ class RapportProvider extends ChangeNotifier{
     notifyListeners();
     saveRapports();
   }
-  
+
   void updateRoomInRapport(String propertyId, Room updatedRoom) {
     Rapport? property = getRapportById(propertyId);
     if (property == null) {
       throw Exception('No property found with this ID');
     }
 
-    int roomIndex = property.roomList.indexWhere((r) => r.roomId == updatedRoom.roomId);
+    int roomIndex = property.roomList.indexWhere(
+      (r) => r.roomId == updatedRoom.roomId,
+    );
     if (roomIndex != -1) {
       property.roomList[roomIndex] = updatedRoom;
       updateRapportGlobal(property);
@@ -270,37 +275,38 @@ class RapportProvider extends ChangeNotifier{
     }
   }
 
-  void changeRoomStatus(Room roomToCheck){
-    EtatsElement newEtat ;
-    roomToCheck.statut == EtatsElement.aReparer ? newEtat=EtatsElement.ok:newEtat=EtatsElement.aReparer;
+  void changeRoomStatus(Room roomToCheck) {
+    EtatsElement newEtat;
+    roomToCheck.statut == EtatsElement.aReparer
+        ? newEtat = EtatsElement.ok
+        : newEtat = EtatsElement.aReparer;
 
     for (int i = 0; i < _properties.length; i++) {
-    var rapport = _properties[i];
-    int roomIndex = rapport.roomList.indexWhere((r) => r.roomId == roomToCheck.roomId);
+      var rapport = _properties[i];
+      int roomIndex = rapport.roomList.indexWhere(
+        (r) => r.roomId == roomToCheck.roomId,
+      );
 
       if (roomIndex != -1) {
         // Create a NEW Room object with the updated status
         Room newRoom = Room(
-            roomId: roomToCheck.roomId,
-            roomTrueName: roomToCheck.roomTrueName,
-            roomName: roomToCheck.roomName,
-            statut: newEtat, 
-            elements: roomToCheck.elements,
+          roomId: roomToCheck.roomId,
+          roomTrueName: roomToCheck.roomTrueName,
+          roomName: roomToCheck.roomName,
+          statut: newEtat,
+          elements: roomToCheck.elements,
         );
 
         // Replace the old Room object with the new one in the master list
         rapport.roomList[roomIndex] = newRoom;
-      
-      Rapport? propertyUpdated = getPropertyByRoomId(newRoom.roomId);
-      if (propertyUpdated != null) {
-        updateRapportGlobal(propertyUpdated);
-      }
-      notifyListeners();
-      saveRapports();
+
+        Rapport? propertyUpdated = getPropertyByRoomId(newRoom.roomId);
+        if (propertyUpdated != null) {
+          updateRapportGlobal(propertyUpdated);
+        }
+        notifyListeners();
+        saveRapports();
       }
     }
   }
-
-
-
 }

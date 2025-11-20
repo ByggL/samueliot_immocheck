@@ -37,7 +37,7 @@ class _ReportListState extends State<ReportList> {
       filtered = filtered.where((report) {
         final fieldValue = switch (_searchField) {
           'name' => report.nom,
-          'type' => propertyString( report.propertyType),
+          'type' => propertyString(report.propertyType),
           'date' => DateFormat(
             'yyyy-MM-dd – kk:mm',
           ).format(report.creationDate),
@@ -209,7 +209,10 @@ class _ReportListState extends State<ReportList> {
                       value: 'inprogress',
                       child: Text('In progress'),
                     ),
-                    DropdownMenuItem(value: 'finished', child: Text('Finished')),
+                    DropdownMenuItem(
+                      value: 'finished',
+                      child: Text('Finished'),
+                    ),
                   ],
                 ),
               ],

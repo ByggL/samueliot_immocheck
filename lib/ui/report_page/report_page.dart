@@ -21,7 +21,6 @@ class ReportPage extends StatefulWidget {
 }
 
 class _ReportPageState extends State<ReportPage> {
-
   // Single refresh function for all sub-components to call
   void _refreshState() {
     setState(() {});
@@ -112,7 +111,6 @@ class _ReportPageState extends State<ReportPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   ElevatedButton.icon(
-                    
                     onPressed: exportService.generateAndSharePdf,
                     icon: const Icon(Icons.picture_as_pdf),
                     label: const Text("Export to PDF"),
@@ -188,7 +186,7 @@ class _ReportPageState extends State<ReportPage> {
                             Container(
                               height: 120,
                               width: 300,
-                              
+
                               decoration: BoxDecoration(
                                 border: Border.all(
                                   color: const Color.fromARGB(255, 250, 53, 53),

@@ -28,9 +28,7 @@ class ReportInfoCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text("Adress: ${rapport.adresse}"),
             Text("Type: ${propertyString(rapport.propertyType)}"),
-            Text(
-              "Report status: ${etatRapportString(rapport.statutRapport)}",
-            ),
+            Text("Report status: ${etatRapportString(rapport.statutRapport)}"),
             Text(
               "Created : ${DateFormat('yyyy-MM-dd – kk:mm').format(rapport.creationDate)}",
             ),

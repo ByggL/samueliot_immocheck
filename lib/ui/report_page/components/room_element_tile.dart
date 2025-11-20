@@ -9,7 +9,7 @@ import 'package:samueliot_immocheck/ui/forms/element_inspection_form.dart';
 class RoomElementTile extends StatelessWidget {
   final Room room;
   final RoomElement element;
-  final VoidCallback onUpdate; 
+  final VoidCallback onUpdate;
 
   const RoomElementTile({
     super.key,
@@ -21,7 +21,12 @@ class RoomElementTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Check report status through the provider using the room's ID
-    final bool isRapportTermine = context.read<RapportProvider>().getPropertyByRoomId(room.roomId)?.statutRapport == EtatsRapport.termine;
+    final bool isRapportTermine =
+        context
+            .read<RapportProvider>()
+            .getPropertyByRoomId(room.roomId)
+            ?.statutRapport ==
+        EtatsRapport.termine;
 
     return ListTile(
       leading: const Icon(Icons.home_repair_service),
@@ -39,16 +44,19 @@ class RoomElementTile extends StatelessWidget {
           element.elementPicture.isNotEmpty
               ? const Icon(Icons.photo_library, color: Colors.blueAccent)
               : const Icon(Icons.photo_outlined, color: Colors.grey),
-          
+
           IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
-            onPressed: isRapportTermine ? null : () {
-              context.read<RapportProvider>().deleteElementFromRoom(
-                room.roomId,
-                element.elementID,
-              );
-              onUpdate(); 
-            },
+            onPressed:
+                isRapportTermine
+                    ? null
+                    : () {
+                      context.read<RapportProvider>().deleteElementFromRoom(
+                        room.roomId,
+                        element.elementID,
+                      );
+                      onUpdate();
+                    },
           ),
         ],
       ),

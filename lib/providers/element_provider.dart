@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:samueliot_immocheck/data/enums.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -11,14 +10,23 @@ class RoomElement {
   final EtatsElement statut;
   final List<dynamic> elementPicture;
 
-  RoomElement({required this.commentaire, required this.statut, required this.elementPicture, required this.elementName, required this.elementID});
+  RoomElement({
+    required this.commentaire,
+    required this.statut,
+    required this.elementPicture,
+    required this.elementName,
+    required this.elementID,
+  });
 
   Map<String, dynamic> toJson() => {
     'elementID': elementID,
     'elementName': elementName.index,
     'commentaire': commentaire,
     'statut': statut.index,
-    'elementPicture': elementPicture.map((xfile) => xfile is String? xfile : xfile.path).toList(),
+    'elementPicture':
+        elementPicture
+            .map((xfile) => xfile is String ? xfile : xfile.path)
+            .toList(),
   };
 
   factory RoomElement.fromJson(Map<String, dynamic> json) => RoomElement(

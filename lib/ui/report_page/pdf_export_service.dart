@@ -23,7 +23,9 @@ class PdfExportService {
   void exportJson() {
     final jsonString = jsonEncode(rapport.toJson());
     // Use Share.share for simple text sharing/saving
-    SharePlus.instance.share(ShareParams(text: jsonString, subject: 'Rapport JSON: ${rapport.nom}'));
+    SharePlus.instance.share(
+      ShareParams(text: jsonString, subject: 'Rapport JSON: ${rapport.nom}'),
+    );
   }
 
   Future<void> generateAndSharePdf() async {
@@ -36,25 +38,84 @@ class PdfExportService {
         pageFormat: PdfPageFormat.a4,
         build: (pw.Context context) {
           List<pw.Widget> widgets = [];
-          
+
           // Signatures section
-          widgets.add(pw.Text('Signatures', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, font: font)));
-          widgets.add(pw.Text('Signature: ${rapport.signature.isNotEmpty ? 'Yes' : 'No'}', style: pw.TextStyle(font: font)));
+          widgets.add(
+            pw.Text(
+              'Signatures',
+              style: pw.TextStyle(
+                fontSize: 18,
+                fontWeight: pw.FontWeight.bold,
+                font: font,
+              ),
+            ),
+          );
+          widgets.add(
+            pw.Text(
+              'Signature: ${rapport.signature.isNotEmpty ? 'Yes' : 'No'}',
+              style: pw.TextStyle(font: font),
+            ),
+          );
           widgets.add(pw.SizedBox(height: 16));
-          
+
           // Main info section
-          widgets.add(pw.Text('Main informations', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, font: font)));
-          widgets.add(pw.Text('Name: ${rapport.nom}', style: pw.TextStyle(font: font)));
-          widgets.add(pw.Text('Adress: ${rapport.adresse}', style: pw.TextStyle(font: font)));
-          widgets.add(pw.Text('Type: ${propertyString(rapport.propertyType)}', style: pw.TextStyle(font: font)));
-          widgets.add(pw.Text('Report status: ${etatRapportString(rapport.statutRapport)}', style: pw.TextStyle(font: font)));
-          widgets.add(pw.Text('Created : ${DateFormat('yyyy-MM-dd - kk:mm').format(rapport.creationDate)}', style: pw.TextStyle(font: font)));
+          widgets.add(
+            pw.Text(
+              'Main informations',
+              style: pw.TextStyle(
+                fontSize: 18,
+                fontWeight: pw.FontWeight.bold,
+                font: font,
+              ),
+            ),
+          );
+          widgets.add(
+            pw.Text('Name: ${rapport.nom}', style: pw.TextStyle(font: font)),
+          );
+          widgets.add(
+            pw.Text(
+              'Adress: ${rapport.adresse}',
+              style: pw.TextStyle(font: font),
+            ),
+          );
+          widgets.add(
+            pw.Text(
+              'Type: ${propertyString(rapport.propertyType)}',
+              style: pw.TextStyle(font: font),
+            ),
+          );
+          widgets.add(
+            pw.Text(
+              'Report status: ${etatRapportString(rapport.statutRapport)}',
+              style: pw.TextStyle(font: font),
+            ),
+          );
+          widgets.add(
+            pw.Text(
+              'Created : ${DateFormat('yyyy-MM-dd - kk:mm').format(rapport.creationDate)}',
+              style: pw.TextStyle(font: font),
+            ),
+          );
           widgets.add(pw.SizedBox(height: 16));
-          
+
           // Rooms summary section on the cover
-          widgets.add(pw.Text('Summary of the rooms', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, font: font)));
+          widgets.add(
+            pw.Text(
+              'Summary of the rooms',
+              style: pw.TextStyle(
+                fontSize: 18,
+                fontWeight: pw.FontWeight.bold,
+                font: font,
+              ),
+            ),
+          );
           for (final room in rapport.roomList) {
-            widgets.add(pw.Text('- ${room.roomTrueName}/${roomTypeString(room.roomName)} (${room.elements.length} elements)', style: pw.TextStyle(font: font)));
+            widgets.add(
+              pw.Text(
+                '- ${room.roomTrueName}/${roomTypeString(room.roomName)} (${room.elements.length} elements)',
+                style: pw.TextStyle(font: font),
+              ),
+            );
           }
 
           return [
@@ -66,7 +127,6 @@ class PdfExportService {
         },
       ),
     );
-
 
     // 2. Add detailed pages for each element with ASYNCHRONOUS image loading
     for (final room in rapport.roomList) {
@@ -81,12 +141,12 @@ class PdfExportService {
             } else if (pictureItem is String) {
               imagePath = pictureItem;
             }
-            
+
             if (imagePath != null && imagePath.isNotEmpty) {
               try {
                 final File file = File(imagePath);
                 final Uint8List imageBytes = await file.readAsBytes();
-                
+
                 imageWidgets.add(
                   pw.Padding(
                     padding: const pw.EdgeInsets.symmetric(vertical: 8),
@@ -97,17 +157,17 @@ class PdfExportService {
                           'Picture for ${roomElementString(element.elementName)} (Status: ${element.statut.name})',
                           style: pw.TextStyle(font: font, fontSize: 10),
                         ),
-                        pw.Image(
-                          pw.MemoryImage(imageBytes),
-                          width: 200, 
-                        ),
+                        pw.Image(pw.MemoryImage(imageBytes), width: 200),
                       ],
                     ),
                   ),
                 );
               } catch (e) {
                 imageWidgets.add(
-                  pw.Text('Error: No picture found.', style: pw.TextStyle(color: PdfColors.red, font: font)),
+                  pw.Text(
+                    'Error: No picture found.',
+                    style: pw.TextStyle(color: PdfColors.red, font: font),
+                  ),
                 );
               }
             }
@@ -124,13 +184,23 @@ class PdfExportService {
                 children: [
                   pw.Text(
                     'Room: ${roomTypeString(room.roomName)} - Element: ${roomElementString(element.elementName)}',
-                    style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, font: font),
+                    style: pw.TextStyle(
+                      fontSize: 18,
+                      fontWeight: pw.FontWeight.bold,
+                      font: font,
+                    ),
                   ),
                   pw.SizedBox(height: 10),
-                  pw.Text('Status: ${etatElementString(element.statut)}', style: pw.TextStyle(font: font)),
-                  pw.Text('Commentary: ${element.commentaire}', style: pw.TextStyle(font: font)),
+                  pw.Text(
+                    'Status: ${etatElementString(element.statut)}',
+                    style: pw.TextStyle(font: font),
+                  ),
+                  pw.Text(
+                    'Commentary: ${element.commentaire}',
+                    style: pw.TextStyle(font: font),
+                  ),
                   pw.SizedBox(height: 15),
-                  
+
                   // Insert the asynchronously loaded image widgets
                   ...imageWidgets,
                 ],
@@ -141,10 +211,10 @@ class PdfExportService {
       }
     }
 
-
     // 3. Save the PDF bytes
     final Uint8List pdfBytes = await doc.save();
-    final String fileName = 'Rapport_${rapport.nom}_${DateFormat('yyyyMMdd').format(DateTime.now())}.pdf';
+    final String fileName =
+        'Rapport_${rapport.nom}_${DateFormat('yyyyMMdd').format(DateTime.now())}.pdf';
 
     // 4. Handle sharing/saving based on platform
     if (kIsWeb) {
@@ -153,15 +223,18 @@ class PdfExportService {
       final status = await Permission.storage.request();
       if (!status.isGranted) {
         ScaffoldMessenger.of(this.context).showSnackBar(
-          const SnackBar(content: Text("Storage permission denied. Cannot save file.")),
+          const SnackBar(
+            content: Text("Storage permission denied. Cannot save file."),
+          ),
         );
         await Printing.sharePdf(bytes: pdfBytes, filename: fileName);
-        return; 
+        return;
       }
 
-      final Directory? directory = Platform.isAndroid
-          ? await getExternalStorageDirectory() 
-          : await getApplicationDocumentsDirectory(); 
+      final Directory? directory =
+          Platform.isAndroid
+              ? await getExternalStorageDirectory()
+              : await getApplicationDocumentsDirectory();
 
       if (directory == null) {
         ScaffoldMessenger.of(this.context).showSnackBar(

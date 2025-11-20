@@ -1,6 +1,3 @@
-
-
-
 import 'package:flutter/material.dart';
 import 'package:samueliot_immocheck/data/enums.dart';
 import 'package:samueliot_immocheck/providers/element_provider.dart';
@@ -21,7 +18,10 @@ class Room {
     required this.roomId,
   }) : elements = elements ?? Room.defaultElementsForRoomType(roomName, roomId);
 
-static List<RoomElement> defaultElementsForRoomType(RoomTypes type, String roomId) {
+  static List<RoomElement> defaultElementsForRoomType(
+    RoomTypes type,
+    String roomId,
+  ) {
     // print(type);
     // Helper to create a RoomElement with minimal info
     RoomElement makeElement(RoomElements el) => RoomElement(
@@ -106,7 +106,7 @@ static List<RoomElement> defaultElementsForRoomType(RoomTypes type, String roomI
           makeElement(RoomElements.toilets),
           makeElement(RoomElements.ventilation),
         ];
-        
+
       case RoomTypes.other:
         return [
           makeElement(RoomElements.walls),
@@ -133,45 +133,44 @@ static List<RoomElement> defaultElementsForRoomType(RoomTypes type, String roomI
     roomTrueName: json['roomTrueName'],
     roomName: RoomTypes.values[json['roomName']],
     statut: EtatsElement.values[json['statut']],
-    elements: (json['elements'] as List).map((e) => RoomElement.fromJson(e)).toList(),
+    elements:
+        (json['elements'] as List).map((e) => RoomElement.fromJson(e)).toList(),
   );
 }
 
-class RoomProvider extends ChangeNotifier{
-
+class RoomProvider extends ChangeNotifier {
   Future<Room?> getRoomById(String roomId) async {
     PropertyProvider provider = PropertyProvider();
     await provider.loadProperties();
     List<Property> allProperties = provider.properties;
-    for (Property property in allProperties){
-      for (Room room in property.roomList){
-        if (room.roomId == roomId){
+    for (Property property in allProperties) {
+      for (Room room in property.roomList) {
+        if (room.roomId == roomId) {
           return room;
         }
       }
-    } 
+    }
     return null;
   }
 
-  List<Room>? getRoomsByPropertyId(String propertyId){
+  List<Room>? getRoomsByPropertyId(String propertyId) {
     PropertyProvider provider = PropertyProvider();
     provider.loadProperties();
     List<Property> allProperties = provider.properties;
-    for (Property property in allProperties){
-        if (property.propertyId == propertyId){
-          return property.roomList;
-        }
-    } 
+    for (Property property in allProperties) {
+      if (property.propertyId == propertyId) {
+        return property.roomList;
+      }
+    }
     return null;
   }
-  
-  void addElementToRoom(String roomId,RoomElement roomElementToAdd) async{
+
+  void addElementToRoom(String roomId, RoomElement roomElementToAdd) async {
     Room? room = await getRoomById(roomId);
-    
-    if (room==null){
+
+    if (room == null) {
       throw Exception('No room found with this ID');
     }
     room.elements.add(roomElementToAdd);
   }
-
 }
