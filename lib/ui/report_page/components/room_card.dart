@@ -139,7 +139,6 @@ class _RoomCardState extends State<RoomCard> {
             child: Center(
               child: TextButton.icon(
                 onPressed: isRapportTermine ? null : () {
-                  // The room object is passed to the next form
                   Navigator.push(context, ElementInspectionFormPage.route(null, room)).then((_) => onUpdate());
                 },
                 icon: const Icon(Icons.add_circle_outline),

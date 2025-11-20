@@ -21,6 +21,7 @@ class ReportPage extends StatefulWidget {
 }
 
 class _ReportPageState extends State<ReportPage> {
+
   // Single refresh function for all sub-components to call
   void _refreshState() {
     setState(() {});
@@ -67,7 +68,6 @@ class _ReportPageState extends State<ReportPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Watch for changes on the report object
     final rapport =
         context.watch<RapportProvider>().getRapportById(
           widget.rapport.propertyId,

@@ -164,7 +164,6 @@ class _ReportListState extends State<ReportList> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      // fillColor: Theme.of(context).secondaryHeaderColor,
                     ),
                     onChanged: (value) {
                       setState(() {

@@ -86,13 +86,13 @@ enum RoomElements {
   countertop,
   cabinets,
   sink,
-  stove, // Or cooking surface
+  stove,
   refrigeratorSpace,
 
   // Bathroom/WC specific
   bathtubOrShower,
   toilets,
-  sinkVanity, // Using a more specific name for sink in bathroom
+  sinkVanity, 
 
   // Living/Bedroom specific
   wardrobe,

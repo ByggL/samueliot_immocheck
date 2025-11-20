@@ -32,9 +32,7 @@ class RoomElement {
 
 class RoomElementProvider extends ChangeNotifier {
   final List<RoomElement> _elements = [];
-  // Requires flutter_secure_storage in pubspec.yaml
-  // import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-  // import 'dart:convert';
+
   final _storage = FlutterSecureStorage();
 
   List<RoomElement> get elements => List.unmodifiable(_elements);
