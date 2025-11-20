@@ -53,14 +53,27 @@ flutter run -d chrome
 
 # Build des releases
 
-## Android
+## Build en local 
+
+### Android
 
 ```bash
 flutter build
 ```
 
-## iOS
+### iOS
 
 ```bash
 flutter build ios
 ```
+
+## Build CI et release github
+
+Pour lancer une release sur le repo github, il suffit de push un tag de la forme v*.*.* non-déjà utilisé sur la branche main du repo et une github action le fera automatiquement: exemple pour une v1.2.3 :
+
+```bash
+git tag v1.2.3
+git push origin v1.2.3
+```
+
+Après l'execution de la github action, la release sera disponible sur le repo. 
