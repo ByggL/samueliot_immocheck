@@ -72,7 +72,7 @@ class _ReportListState extends State<ReportList> {
             const SizedBox(height: 10),
             TextButton(
               onPressed: rapportProvider.loadRapports,
-              child: const Text('Réessayer'),
+              child: const Text('Try again'),
             ),
           ],
         ),
@@ -91,11 +91,11 @@ class _ReportListState extends State<ReportList> {
             const Icon(Icons.note_add_outlined, color: Colors.grey, size: 60),
             const SizedBox(height: 10),
             const Text(
-              "Aucun rapport trouvé.",
+              "No reports found",
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const Text(
-              "Commencez par ajouter un nouveau rapport.",
+              "Start by adding a new report.",
               style: TextStyle(color: Colors.grey),
             ),
           ],
@@ -112,7 +112,7 @@ class _ReportListState extends State<ReportList> {
             const Icon(Icons.search_off, color: Colors.grey, size: 50),
             const SizedBox(height: 10),
             const Text(
-              "Aucun rapport ne correspond à votre recherche.",
+              "No report matches your search.",
               style: TextStyle(fontSize: 16),
             ),
           ],
