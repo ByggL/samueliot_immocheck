@@ -90,8 +90,6 @@ class _BuildRapportFormState extends State<BuildRapportForm> {
                   controller: _adressController,
                   decoration: const InputDecoration(labelText: 'Address'),
                   maxLines: 3,
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'Required' : null,
                 ),
                 const SizedBox(height: 16),
                 ListTile(

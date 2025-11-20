@@ -37,7 +37,7 @@ class _ReportListState extends State<ReportList> {
       filtered = filtered.where((report) {
         final fieldValue = switch (_searchField) {
           'name' => report.nom,
-          'type' => report.propertyType.toString(),
+          'type' => propertyString( report.propertyType),
           'date' => DateFormat(
             'yyyy-MM-dd – kk:mm',
           ).format(report.creationDate),
